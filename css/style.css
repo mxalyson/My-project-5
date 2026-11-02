@@ -146,3 +146,9 @@ details[open] > summary { margin-bottom: 6px; }
 .sec-grid p { font-size: .92rem; }
 .trad { border-left: 3px solid var(--primary); padding-left: 12px; }
 code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; word-break: break-word; }
+.tele { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.tele-in { background: var(--surface); border-radius: 14px; padding: 18px; width: min(760px, 100%); max-height: 92vh; display: flex; flex-direction: column; gap: 8px; }
+.tele-texto { overflow-y: auto; max-height: 55vh; padding: 8px 4px; }
+.tele-texto p { font-size: 1.5rem; line-height: 1.5; color: var(--muted); opacity: .55; transition: all .2s; margin: .8rem 0; }
+.tele-texto p.ativa { color: var(--text); opacity: 1; font-weight: 600; }
+.tele[hidden] { display: none; }

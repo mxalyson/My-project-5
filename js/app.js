@@ -109,7 +109,8 @@
           ["#/evidencias", "🔬", "Evidências e guidelines", "O que fazer e o que não fazer, leitura crítica, PEDro, GRADE e busca de artigos."],
           ["#/estudo", "🎓", "Estudo", "Flashcards com repetição espaçada, quiz e casos clínicos comentados."],
           ["#/artigos", "📰", "Artigos (PubMed)", "Busque no PubMed, avalie a qualidade, traduza (texto completo em acesso aberto) e extraia o que importa."],
-          ["#/instagram", "📸", "Posts para Instagram", "Gere carrosséis e legendas a partir de artigos ou condições, prontos para baixar em PNG."]
+          ["#/instagram", "📸", "Posts para Instagram", "Gere carrosséis e legendas a partir de artigos ou condições, prontos para baixar em PNG."],
+          ["#/reels", "🎬", "Reels com roteiro", "Roteiro natural para falar, vídeo animado 9:16 com legendas, teleprompter e exportação para pôr sua voz."]
         ].map(([h, i, t, d]) => `<a class="card modulo" href="${h}"><div class="ico">${i}</div><h3>${t}</h3><p class="muted">${d}</p></a>`).join("")}
       </div>
       ${avs.length ? `<h2>Avaliações recentes</h2><div class="card">${avs.slice(-5).reverse().map(a => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span><b>${esc(a.nome || "Sem nome")}</b> <small>· ${esc(regiaoNome(a.regiao) || "")} · ${new Date(a.criado).toLocaleDateString("pt-BR")}</small></span><a class="btn peq sec" href="#/avaliacao/${a.id}">Abrir</a></div>`).join("")}</div>` : ""}

@@ -244,7 +244,7 @@
     const b = bib(); const itens = Object.values(b).sort((x, y) => (y.salvo || "").localeCompare(x.salvo || ""));
     el.innerHTML = itens.length ? `<div class="row"><button class="btn sec peq" id="bibExp">Exportar biblioteca (.json)</button><button class="btn sec peq" id="bibMd">Exportar resumos (.md)</button></div>
       ${itens.map(a => `<div class="card"><div class="row" style="justify-content:space-between"><span>${badgeDesenho(a.tipos || [], a.titulo)}${a.ext ? `<span class="tag ok">extraído</span>` : ""}${a.aval ? `<span class="tag ok">avaliado</span>` : ""}</span>
-        <span class="row"><a class="btn peq" href="#/artigo/${a.pmid}">Abrir</a><a class="btn peq sec" href="#/instagram/${a.pmid}">📸 Post</a><button class="btn peq perigo" data-rm="${a.pmid}">Remover</button></span></div>
+        <span class="row"><a class="btn peq" href="#/artigo/${a.pmid}">Abrir</a><a class="btn peq sec" href="#/instagram/${a.pmid}">📸 Post</a><a class="btn peq sec" href="#/reels/${a.pmid}">🎬 Reels</a><button class="btn peq perigo" data-rm="${a.pmid}">Remover</button></span></div>
         <h3 style="margin:.4rem 0">${esc(a.ext?.titulo_pt || a.titulo)}</h3><small class="muted">${esc(a.revista)} · ${esc(a.ano)} · PMID ${a.pmid}</small>
         ${a.ext?.mensagem_para_pratica ? `<p><b>Na prática:</b> ${esc(a.ext.mensagem_para_pratica)}</p>` : ""}${a.notas ? `<p class="muted">📝 ${esc(a.notas)}</p>` : ""}</div>`).join("")}`
       : `<p class="muted">Nenhum artigo salvo. Busque no PubMed e clique em "★ Salvar na biblioteca".</p>`;
@@ -281,7 +281,7 @@
         <a class="btn sec" target="_blank" rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/">PubMed ↗</a>
         ${art.doi ? `<a class="btn sec" target="_blank" rel="noopener" href="https://doi.org/${esc(art.doi)}">DOI ↗</a>` : ""}
         ${art.pmcid ? `<a class="btn sec" target="_blank" rel="noopener" href="https://pmc.ncbi.nlm.nih.gov/articles/${esc(art.pmcid)}/">PMC ↗</a>` : ""}
-        <a class="btn sec" href="#/instagram/${pmid}">📸 Criar post</a></div>
+        <a class="btn sec" href="#/instagram/${pmid}">📸 Criar post</a><a class="btn sec" href="#/reels/${pmid}">🎬 Criar Reels</a></div>
       ${tabs("tabArtigo", [["resumo", "Resumo + tradução"], ["completo", "Texto completo"], ["avaliar", "Avaliar qualidade"], ["extrair", "Extrair o que importa"], ["notas", "Notas"]], "resumo", (k, el) => {
         ({ resumo: tabResumo, completo: tabCompleto, avaliar: tabAvaliar, extrair: tabExtrair, notas: tabNotas })[k](el, art, oa);
       }, true)}`;
