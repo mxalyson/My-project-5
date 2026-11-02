@@ -65,6 +65,10 @@ js/backup.js           # backup/restauração com criptografia
 
 Para adicionar uma condição, inclua um objeto em `CONDICOES` usando chaves existentes de `ACHADOS` e `TESTES`.
 
+## Referências conferidas
+
+As 75 evidências das condições foram conferidas no PubMed (autor, revista, ano e título): 73 têm link direto para o PMID ou para a diretriz do NICE (marcadas com ✓) e 2 estão identificadas como "sem referência específica verificada". Os valores de sensibilidade/especificidade dos testes mais usados (Lachman, pivot shift, gaveta anterior, SLR, Neer, Hawkins, arco doloroso, FADIR, TUG, Ottawa, Canadense) foram conferidos nos resumos originais. Os demais números (MCID, prazos de reparo) seguem como aproximações da literatura.
+
 ## Direitos autorais
 
 A tradução de **texto completo** é feita apenas para artigos em **acesso aberto** (licenças Creative Commons, via Europe PMC); para os demais, só o resumo. Os posts devem resumir com palavras próprias e citar a fonte — não reproduza figuras ou tabelas protegidas.

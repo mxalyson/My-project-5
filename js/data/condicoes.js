@@ -75,7 +75,7 @@ window.CONDICOES = [
     },
     evidencia: [
       { ref: "Delitto A et al. Ann Intern Med 2015", msg: "Descompressão cirúrgica vs fisioterapia: desfechos semelhantes em 2 anos; taxa de cruzamento para cirurgia alta." },
-      { ref: "Schneider MJ et al. Spine 2019 (RCT)", msg: "Programa com terapia manual + exercício melhorou sintomas e caminhada a curto prazo mais que cuidado médico." }
+      { ref: "Schneider MJ et al. JAMA Netw Open 2019 (ECR)", msg: "Programa com terapia manual + exercício melhorou sintomas e caminhada a curto prazo mais que cuidado médico." }
     ],
     desfechos: ["Swiss Spinal Stenosis Questionnaire (ZCQ)", "Teste de caminhada auto-cadenciada / 6 min", "ODI"]
   },
@@ -122,7 +122,7 @@ window.CONDICOES = [
       remodelacao: ["Reintrodução gradual de extensão e gesto esportivo", "Retorno quando sem dor e com força adequada"]
     },
     evidencia: [
-      { ref: "Selhorst M et al. 2020 / revisões em atletas jovens", msg: "Tratamento conservador com retorno gradual é a base; evidência em geral de baixa qualidade." }
+      { ref: "Selhorst M et al. BJSM 2026 — ECR multicêntrico em adolescentes atletas com espondilólise ativa", msg: "Iniciar a fisioterapia imediatamente foi benéfico — não é preciso esperar um período de repouso antes de começar a reabilitação." }, { ref: "Sweeney EA et al. Orthop J Sports Med 2026", msg: "Repouso antes da fisioterapia não foi necessário para obter consolidação óssea da espondilólise em adolescentes." }
     ],
     desfechos: ["ODI / Micheli Functional Scale", "Retorno ao esporte"]
   },
@@ -140,7 +140,7 @@ window.CONDICOES = [
       proliferativa: ["Exercício supervisionado: mobilidade, força, aeróbico, postura"],
       remodelacao: ["Programa contínuo de exercício (recomendação forte ASAS-EULAR)"]
     },
-    evidencia: [{ ref: "Ramiro S et al. ASAS-EULAR recommendations, Ann Rheum Dis 2023", msg: "Educação, exercício regular e cessação do tabagismo são recomendados para todos; fisioterapia supervisionada preferível a exercício domiciliar." }],
+    evidencia: [{ ref: "Ramiro S et al. Ann Rheum Dis 2023 — ASAS-EULAR recommendations for axial spondyloarthritis: 2022 update", msg: "Educação, exercício regular e cessação do tabagismo são recomendados para todos; fisioterapia supervisionada preferível a exercício domiciliar." }],
     desfechos: ["BASFI", "BASDAI", "BASMI"]
   },
 
@@ -250,7 +250,7 @@ window.CONDICOES = [
       proliferativa: ["Fortalecimento de deltoide anterior (compensa manguito em rupturas maciças) e escapulares", "Fortalecimento do manguito residual"],
       remodelacao: ["Treino funcional", "Pós-reparo: seguir protocolo (proteção 4–6 sem, força a partir de 12 sem)"]
     },
-    evidencia: [{ ref: "Kukkonen J et al. Bone Joint J 2015 (RCT)", msg: "Rupturas não traumáticas do supraespinal: fisioterapia isolada ≈ reparo cirúrgico em 1 ano." }],
+    evidencia: [{ ref: "Kukkonen J et al. Bone Joint J 2014 (ECR, 1 ano) e J Bone Joint Surg Am 2015 (2 anos)", msg: "Rupturas não traumáticas do supraespinal: fisioterapia isolada teve resultados semelhantes ao reparo cirúrgico em 1 e 2 anos." }],
     desfechos: ["WORC", "SPADI", "Constant-Murley"]
   },
   {
@@ -284,7 +284,7 @@ window.CONDICOES = [
       proliferativa: ["Fortalecimento de manguito e escapulares, controle neuromuscular em posições progressivas"],
       remodelacao: ["Exercícios em posição de apreensão com carga, pliometria de MMSS", "Retorno ao esporte por critérios"]
     },
-    evidencia: [{ ref: "Watson L et al. / revisões de instabilidade atraumática", msg: "Programas de controle motor (ex.: Watson program) para instabilidade atraumática." }],
+    evidencia: [{ ref: "Sem referência específica verificada", msg: "Programas de controle motor progressivo são a base para instabilidade atraumática; a evidência é limitada. Consulte revisões recentes antes de decidir." }],
     desfechos: ["WOSI", "Teste CKCUEST"]
   },
   {
@@ -297,7 +297,7 @@ window.CONDICOES = [
     encaminhar: ["Rockwood IV–VI (cirúrgico)", "Deformidade importante"],
     prognostico: { texto: "Tipos I–II: boa recuperação em 2–6 semanas; tipo III controverso (conservador geralmente primeiro).", bom: ["Grau I–II"], ruim: ["Grau alto", "Atividade com carga pesada acima da cabeça"] },
     conduta: { inflamatoria: ["Proteção relativa, sling por conforto", "ADM sem dor"], proliferativa: ["Fortalecimento escapular e de manguito"], remodelacao: ["Retorno progressivo à carga e esporte"] },
-    evidencia: [{ ref: "Revisões Cochrane sobre lesões AC", msg: "Evidência insuficiente para superioridade da cirurgia em lesões tipo III." }],
+    evidencia: [{ ref: "Sem referência específica verificada", msg: "Em lesões AC tipo III, não há evidência clara de superioridade da cirurgia; o tratamento conservador costuma ser tentado primeiro. Confira revisões recentes." }],
     desfechos: ["QuickDASH", "SPADI"]
   },
 
@@ -770,3 +770,27 @@ window.rotuloAchado = function (k) {
   for (const g of Object.values(window.ACHADOS)) if (g.itens[k]) return g.itens[k];
   return k;
 };
+
+
+// Referências conferidas no PubMed (autor, revista, ano e título) — PMIDs para link direto.
+window.REF_PMID = [
+  ["George SZ", ["34719942"]], ["Foster NE", ["29573872"]], ["Hayden JA", ["34580864"]], ["Hill JC", ["21963002"]], ["Peul WC", ["17538084"]],
+  ["Brinjikji W", ["25430861"]], ["Delitto A", ["25844995"]], ["Schneider MJ", ["30646197"]], ["Laslett M", ["16038856"]], ["Stuge B", ["15094530", "15131454"]],
+  ["Selhorst M", ["41402030"]], ["Sweeney EA", ["42099883"]], ["Ramiro S", ["36270658"]], ["Blanpied PR", ["28666405"]], ["Wainner RS", ["12544957"]], ["Jull G", ["12221344"]],
+  ["Beard DJ", ["29169668", "30026230"]], ["Diercks R", ["24847788"]], ["Lewis J", ["27083390"]], ["Kukkonen J", ["24395315", "26537160"]],
+  ["Kelley MJ", ["23636125"]], ["Challoumas D", ["33326025"]], ["Lucado AM", ["36453071"]], ["Coombes BK", ["23385272"]], ["Erickson M", ["31039690"]],
+  ["Ashraf MO", ["23412309"]], ["Bannuru RR", ["31278997", "31908149"]], ["Cibulka MT", ["28566053"]], ["Mellor R", ["29720374"]],
+  ["Griffin DR et al. BJSM 2016", ["27629403"]], ["Griffin DR et al. Lancet 2018", ["29893223"]], ["Weir A", ["26031643"]], ["Harøy J", ["29891614"]],
+  ["Askling CM", ["23536466"]], ["van Dyk N", ["30808663"]], ["Willy RW", ["31475628"]], ["Crossley KM", ["27343241"]], ["Frobell RB", ["20660401"]],
+  ["Grindem H", ["27162233"]], ["Filbay SR", ["31431274"]], ["Logerstedt DS et al. JOSPT 2017", ["29089004"]], ["Kise NJ", ["27440192"]],
+  ["Logerstedt DS et al. JOSPT 2018", ["29385940"]], ["Skou ST", ["26488691"]], ["Malliaras P", ["26390269"]], ["Kongsgaard M", ["19793213"]],
+  ["Vuurberg G", ["29514819"]], ["Martin RL et al. JOSPT 2021", ["33789434"]], ["Doherty C", ["28053200"]], ["Martin RL et al. JOSPT 2018", ["29712543"]],
+  ["Beyer R", ["26018970"]], ["Silbernagel KG", ["17307888"]], ["Ochen Y", ["30617123"]], ["Koc TA", ["38037331"]], ["Rathleff MS", ["25145882"]],
+  ["van Melick N", ["27539507"]], ["Kotsifaki R", ["36731908"]], ["Thigpen CA", ["26995456"]], ["Jette DU", ["32542403"]], ["Armijo-Olivo S", ["26294683"]],
+  ["Schiffman E", ["24482784"]], ["Macfarlane GJ", ["27377815"]], ["Montero-Odasso M", ["36178003"]], ["Sherrington C", ["30703272"]], ["Benjamin DR", ["24268942"]]
+];
+window.REF_URL = [["NICE NG59", "https://www.nice.org.uk/guidance/ng59"], ["NICE NG226", "https://www.nice.org.uk/guidance/ng226"], ["NICE NG157", "https://www.nice.org.uk/guidance/ng157"]];
+window.CONDICOES.forEach(c => c.evidencia.forEach(e => {
+  e.pmids = window.REF_PMID.filter(([k]) => e.ref.includes(k)).flatMap(([, ids]) => ids);
+  e.urls = window.REF_URL.filter(([k]) => e.ref.includes(k)).map(([, u]) => u);
+}));

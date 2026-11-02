@@ -336,12 +336,19 @@
         <p><b>Reparo do tecido (${esc(t?.nome)}):</b> ${esc(t?.tempo)}</p></div>
       <h2>Conduta por fase</h2>
       <div class="timeline">${FASES.map(f => `<div class="card fase" style="border-top-color:${f.cor}"><h3>${esc(f.nome)}</h3>${lista(c.conduta[f.id])}</div>`).join("")}</div>
-      <div class="card"><h3>O que dizem as evidências</h3>${c.evidencia.map(e => `<div class="info"><b>${esc(e.ref)}</b><p>${esc(e.msg)}</p>
-        <a href="https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(e.ref.replace(/[—()]/g, " ").slice(0, 120))}" target="_blank" rel="noopener">Buscar no PubMed ↗</a></div>`).join("")}</div>
+      <div class="card"><h3>O que dizem as evidências</h3>${c.evidencia.map(e => `<div class="info"><b>${esc(e.ref)}</b><p>${esc(e.msg)}</p>${linksRef(e)}</div>`).join("")}
+        <p class="muted" style="font-size:.82rem">✓ = referência conferida no PubMed (autor, revista, ano e título). O resumo de cada mensagem é uma síntese — leia a fonte antes de decisões importantes.</p></div>
       <div class="card"><h3>Medidas de desfecho sugeridas</h3>${c.desfechos.map(d => `<span class="tag">${esc(d)}</span>`).join("")} <a href="#/ferramentas">ver MCID</a></div>`;
   }
 
   // ================================================================= TESTES
+  function linksRef(e) {
+    const l = [...(e.pmids || []).map(id => `<a class="tag ok" href="#/artigo/${id}">✓ PMID ${id} — abrir no sistema</a><a class="tag" href="https://pubmed.ncbi.nlm.nih.gov/${id}/" target="_blank" rel="noopener">PubMed ↗</a>`),
+      ...(e.urls || []).map(u => `<a class="tag ok" href="${u}" target="_blank" rel="noopener">✓ Diretriz NICE ↗</a>`)];
+    return l.length ? `<div>${l.join(" ")}</div>` : `<a href="https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(e.ref.replace(/[—()]/g, " ").slice(0, 120))}" target="_blank" rel="noopener">Buscar no PubMed ↗</a>`;
+  }
+  window.linksRef = linksRef;
+
   function viewTestes(foco) {
     app.innerHTML = `<h1>🔍 Testes especiais</h1>
       <p class="muted">Sn alta + teste negativo → descarta (SnNout). Sp alta + teste positivo → confirma (SpPin). Valores aproximados de revisões/estudos de acurácia.</p>
@@ -471,7 +478,7 @@
           <div class="card"><h3 style="color:var(--warn)">❓ Incerto / evidência mista</h3>${FACA_NAO_FACA.incerto.map(f => `<p><b>${esc(f[0])}</b><br><small>${esc(f[1])}</small></p>`).join("")}</div></div>`;
         if (k === "guidelines") el.innerHTML = REGIOES.map(r => {
           const cs = CONDICOES.filter(c => c.regiao === r.id); if (!cs.length) return "";
-          return `<h2>${esc(r.nome)}</h2>${cs.map(c => `<details><summary>${esc(c.nome)}</summary>${c.evidencia.map(e => `<div class="info"><b>${esc(e.ref)}</b><p>${esc(e.msg)}</p></div>`).join("")}<a href="#/condicao/${c.id}">Ver condição completa →</a></details>`).join("")}`;
+          return `<h2>${esc(r.nome)}</h2>${cs.map(c => `<details><summary>${esc(c.nome)}</summary>${c.evidencia.map(e => `<div class="info"><b>${esc(e.ref)}</b><p>${esc(e.msg)}</p>${linksRef(e)}</div>`).join("")}<a href="#/condicao/${c.id}">Ver condição completa →</a></details>`).join("")}`;
         }).join("");
         if (k === "onze") el.innerHTML = `<div class="card"><h3>Melhor prática para dor musculoesquelética</h3><p class="muted">Lin I et al. What does best practice care for musculoskeletal pain look like? Eleven consistent recommendations from high-quality clinical practice guidelines. BJSM 2020;54:79–86.</p><ol>${ONZE_RECOMENDACOES.map(r => `<li>${esc(r)}</li>`).join("")}</ol></div>`;
         if (k === "niveis") el.innerHTML = `<div class="card"><h3>Hierarquia de evidência (Oxford CEBM — intervenção)</h3><table>${NIVEIS_EVIDENCIA.map(n => `<tr><th>${n.nivel}</th><td>${esc(n.desc)}<br><small>${esc(n.nota)}</small></td></tr>`).join("")}</table>
