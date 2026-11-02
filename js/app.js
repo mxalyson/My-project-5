@@ -88,8 +88,13 @@
     const avs = store.get("fisio_avaliacoes", []);
     const nMusc = Object.values(MUSCULOS).reduce((s, a) => s + a.length, 0);
     app.innerHTML = `
-      <h1>FisioRaciocínio</h1>
-      <p class="muted">Sistema de estudo e apoio ao raciocínio clínico em fisioterapia musculoesquelética — da avaliação à conduta, com base em diretrizes e artigos de alta qualidade.</p>
+      ${(() => { const m = window.MARCA ? window.MARCA.get() : { nome: "FisioRaciocínio", sub: "", lema: "", rodape: "" }; return `<div class="hero">
+        <div class="row" style="gap:16px;flex-wrap:nowrap"><img src="icons/logo.svg" alt="" style="width:76px;height:76px;flex:none">
+        <div><h1 style="margin:0">${esc(m.nome)}</h1><div style="letter-spacing:.3em;font-size:.72rem;color:#e9dcbc;text-transform:uppercase">${esc(m.sub)}</div></div></div>
+        <div class="ornamento"></div>
+        <p class="lema">${esc(m.lema || "Cuidado, movimento e qualidade de vida")}</p>
+        <p style="color:#d9cfb4;max-width:720px">Estudo e apoio ao raciocínio clínico — da avaliação à conduta, com diretrizes e artigos de alta qualidade, e criação de conteúdo para as redes.</p>
+        <div class="pilares">${esc((m.rodape || "").toUpperCase())}</div></div>`; })()}
       <div class="card">
         <h3>Fluxo do raciocínio clínico</h3>
         <div class="row" style="gap:6px">

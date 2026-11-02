@@ -68,7 +68,18 @@
   // ---------------------------------------------------------------- tela de configuração
   function viewIA() {
     const c = cfg();
-    app.innerHTML = `<h1>⚙️ Configurar IA</h1>
+    const m = window.MARCA.get();
+    app.innerHTML = `<h1>⚙️ Configurações</h1>
+      <div class="card" id="mkForm"><h3>🎨 Sua marca</h3><p class="muted">Usada no cabeçalho do app, nos posts e nos Reels (tema "Marca").</p>
+        <div class="form-grid">
+          <div><label>Nome</label><input type="text" id="mkNome" value="${esc(m.nome)}"></div>
+          <div><label>Subtítulo</label><input type="text" id="mkSub" value="${esc(m.sub)}"></div>
+          <div><label>Monograma (iniciais)</label><input type="text" id="mkMono" maxlength="3" value="${esc(m.mono)}"></div>
+          <div><label>@ do Instagram</label><input type="text" id="mkPerfil" value="${esc(m.perfil)}"></div>
+          <div><label>Lema</label><input type="text" id="mkLema" value="${esc(m.lema)}"></div>
+          <div><label>Rodapé (pilares)</label><input type="text" id="mkRod" value="${esc(m.rodape)}"></div>
+        </div><div class="row" style="margin-top:10px"><button class="btn" id="mkSalvar">Salvar marca</button></div><div id="mkOut"></div></div>
+      <h2>🤖 Inteligência artificial</h2>
       <p class="muted">A tradução completa, a extração detalhada, a avaliação crítica aprofundada e a criação de posts com texto usam a API da Claude (Anthropic). Sem chave, o sistema funciona com recursos automáticos básicos (regras e modelos prontos).</p>
       <div class="card" id="iaForm">
         <label>Chave da API da Anthropic</label><input type="password" id="iaKey" placeholder="sk-ant-..." value="${esc(c.key)}" autocomplete="off">
@@ -82,6 +93,10 @@
       </div>
       <div class="aviso"><b>Segurança:</b> a chave fica salva apenas neste navegador (localStorage) e é enviada somente para api.anthropic.com. Não use em computadores compartilhados. Para uso em equipe, o ideal é um servidor intermediário que guarde a chave.</div>
       <div class="info">Quando o filtro de segurança do modelo recusa um pedido, a API tenta automaticamente outro modelo recomendado (fallback do servidor) — ativado por padrão para Opus e Sonnet.</div>`;
+    $("#mkSalvar").addEventListener("click", () => {
+      window.MARCA.set({ nome: $("#mkNome").value.trim(), sub: $("#mkSub").value.trim(), mono: $("#mkMono").value.trim().toUpperCase(), perfil: $("#mkPerfil").value.trim(), lema: $("#mkLema").value.trim(), rodape: $("#mkRod").value.trim() });
+      $("#mkOut").innerHTML = `<div class="sucesso">Marca salva. Posts e Reels passam a usá-la.</div>`;
+    });
     const ler = () => ({ key: $("#iaKey").value.trim(), modelo: $("#iaModelo").value, effort: $("#iaEffort").value });
     $("#iaSalvar").addEventListener("click", () => { store.set("ia_cfg", ler()); $("#iaOut").innerHTML = `<div class="sucesso">Configuração salva.</div>`; });
     $("#iaApagar").addEventListener("click", () => { store.set("ia_cfg", { ...ler(), key: "" }); $("#iaKey").value = ""; $("#iaOut").innerHTML = `<div class="info">Chave apagada.</div>`; });

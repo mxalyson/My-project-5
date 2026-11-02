@@ -6,6 +6,7 @@
 
   const FORMATOS = { retrato: [1080, 1350, "Retrato 4:5 (feed)"], quadrado: [1080, 1080, "Quadrado 1:1"], story: [1080, 1920, "Story/Reels 9:16"] };
   const TEMAS = {
+    marca: window.MARCA.TEMA,
     clinico: { nome: "Clínico azul", bg: "#0f3d75", bg2: "#1e6fd9", fg: "#ffffff", acc: "#7fd1ff", sub: "#cfe3ff", card: "rgba(255,255,255,.10)" },
     claro: { nome: "Claro minimalista", bg: "#f6f8fb", bg2: "#e6eef8", fg: "#14213d", acc: "#1e6fd9", sub: "#4a5a75", card: "rgba(30,111,217,.08)" },
     verde: { nome: "Verde saúde", bg: "#0e4d3c", bg2: "#18815f", fg: "#ffffff", acc: "#a7f3c9", sub: "#d4f5e4", card: "rgba(255,255,255,.10)" },
@@ -15,7 +16,7 @@
   const TIPOS = [["capa", "Capa"], ["conteudo", "Conteúdo"], ["destaque", "Número/frase em destaque"], ["final", "Referência + chamada"]];
   const FONTE = '"Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif';
 
-  const padrao = () => ({ formato: "retrato", tema: "clinico", perfil: "@seuperfil", publico: "fisio", fonte: "", slides: [
+  const padrao = () => ({ formato: "retrato", tema: "marca", perfil: window.MARCA.get().perfil, publico: "fisio", fonte: "", slides: [
     { tipo: "capa", titulo: "Título que prende a atenção", texto: "Subtítulo com a promessa do post" },
     { tipo: "conteudo", titulo: "O que o estudo fez", texto: "• População\n• Intervenção\n• Comparação" },
     { tipo: "destaque", titulo: "↓ 2 pontos", texto: "na dor após 12 semanas" },
@@ -26,6 +27,9 @@
   const salvar = () => store.set("ig_estado", st);
 
   // ---------------------------------------------------------------- desenho
+  let T_ATUAL = null; // tema em uso: define as famílias de fonte (títulos x corpo)
+  const fam = peso => (T_ATUAL && (+peso >= 700 ? T_ATUAL.fTit : T_ATUAL.fCorpo)) || FONTE;
+  const fonte = (peso, s) => { const f = fam(peso); return f.startsWith("italic ") ? `italic ${peso} ${s}px ${f.slice(7)}` : `${peso} ${s}px ${f}`; };
   function quebrar(ctx, texto, larg) {
     const linhas = [];
     String(texto || "").split("\n").forEach(par => {
@@ -41,14 +45,15 @@
   }
   function ajustar(ctx, texto, larg, alt, max, min, peso, lh = 1.22) {
     for (let s = max; s >= min; s -= 2) {
-      ctx.font = `${peso} ${s}px ${FONTE}`;
+      ctx.font = fonte(peso, s);
       const l = quebrar(ctx, texto, larg);
-      if (l.length * s * lh <= alt) return { s, l, lh };
+      const cabe = l.every(x => ctx.measureText(x).width <= larg); // palavra longa não pode vazar
+      if (cabe && l.length * s * lh <= alt) return { s, l, lh };
     }
-    ctx.font = `${peso} ${min}px ${FONTE}`; return { s: min, l: quebrar(ctx, texto, larg), lh };
+    ctx.font = fonte(peso, min); return { s: min, l: quebrar(ctx, texto, larg), lh };
   }
   function escrever(ctx, bloco, x, y, cor, peso) {
-    ctx.fillStyle = cor; ctx.font = `${peso} ${bloco.s}px ${FONTE}`; ctx.textBaseline = "top";
+    ctx.fillStyle = cor; ctx.font = fonte(peso, bloco.s); ctx.textBaseline = "top";
     bloco.l.forEach((ln, i) => ctx.fillText(ln, x, y + i * bloco.s * bloco.lh));
     return y + bloco.l.length * bloco.s * bloco.lh;
   }
@@ -59,15 +64,19 @@
   }
 
   function desenhar(canvas, slide, idx, total) {
-    const [W, H] = FORMATOS[st.formato]; const T = TEMAS[st.tema];
+    const [W, H] = FORMATOS[st.formato]; const T = TEMAS[st.tema] || TEMAS.marca; T_ATUAL = T;
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext("2d");
-    const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, T.bg); g.addColorStop(1, T.bg2);
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    // elementos decorativos
-    ctx.globalAlpha = .12; ctx.fillStyle = T.acc; ctx.beginPath(); ctx.arc(W - 90, 140, 230, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(60, H - 60, 160, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
-    const M = 90, larg = W - 2 * M, topo = st.formato === "story" ? 220 : 110, base = H - (st.formato === "story" ? 260 : 150);
+    const MK = window.MARCA;
+    if (T.marca) { MK.fundo(ctx, W, H); MK.rodape(ctx, W, H - 42); }
+    else {
+      const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, T.bg); g.addColorStop(1, T.bg2);
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = .12; ctx.fillStyle = T.acc; ctx.beginPath(); ctx.arc(W - 90, 140, 230, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(60, H - 60, 160, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    const corTit = T.marca ? MK.ouro(ctx, 90, W - 90) : T.fg; // títulos dourados no tema da marca
+    const M = 90, larg = W - 2 * M - (T.marca ? 110 : 0), topo = st.formato === "story" ? 220 : 110, base = H - (st.formato === "story" ? 260 : 150);
     // rodapé
     ctx.fillStyle = T.sub; ctx.font = `600 30px ${FONTE}`; ctx.textBaseline = "middle";
     ctx.fillText(st.perfil || "", M, base + 70);
@@ -75,22 +84,26 @@
     ctx.fillStyle = T.acc; ctx.fillRect(M, base + 20, 80, 6);
 
     if (slide.tipo === "capa") {
-      pill(ctx, st.publico === "pac" ? "SAÚDE EM EVIDÊNCIA" : "BASEADO EM EVIDÊNCIAS", M, topo, T.acc, T.bg);
+      if (T.marca) MK.assinatura(ctx, M, topo - 20, .9);
+      else pill(ctx, st.publico === "pac" ? "SAÚDE EM EVIDÊNCIA" : "BASEADO EM EVIDÊNCIAS", M, topo, T.acc, T.bg);
       const tt = ajustar(ctx, slide.titulo, larg, (base - topo - 140) * .68, 104, 52, 800, 1.12);
-      let y = escrever(ctx, tt, M, topo + 110, T.fg, 800) + 34;
-      const sb = ajustar(ctx, slide.texto, larg, base - y - 30, 46, 28, 500);
+      let y = escrever(ctx, tt, M, topo + (T.marca ? 150 : 110), corTit, 800) + 34;
+      if (T.marca) { ctx.fillStyle = MK.ouro(ctx, M, M + 420); ctx.fillRect(M, y - 10, 420, 3); y += 26; }
+      const sb = ajustar(ctx, slide.texto, larg, base - y - 30, T.marca ? 58 : 46, 28, 500);
+      if (T.marca) { ctx.save(); T_ATUAL = { ...T, fCorpo: 'italic ' + T.fCorpo }; }
       escrever(ctx, sb, M, y, T.sub, 500);
+      if (T.marca) { ctx.restore(); T_ATUAL = T; }
       if (total > 1) { ctx.fillStyle = T.acc; ctx.font = `700 34px ${FONTE}`; ctx.textBaseline = "middle"; const a = "arraste →"; ctx.fillText(a, W - M - ctx.measureText(a).width, base - 10); }
     } else if (slide.tipo === "destaque") {
       const tt = ajustar(ctx, slide.titulo, larg, (base - topo) * .45, 190, 70, 800, 1.05);
       const sb = ajustar(ctx, slide.texto, larg, (base - topo) * .38, 56, 30, 600);
       const alturaTot = tt.l.length * tt.s * tt.lh + 40 + sb.l.length * sb.s * sb.lh;
       let y = topo + Math.max(0, (base - topo - alturaTot) / 2);
-      y = escrever(ctx, tt, M, y, T.acc, 800) + 40; escrever(ctx, sb, M, y, T.fg, 600);
+      y = escrever(ctx, tt, M, y, T.marca ? corTit : T.acc, 800) + 40; escrever(ctx, sb, M, y, T.fg, 600);
     } else if (slide.tipo === "final") {
       pill(ctx, "REFERÊNCIA", M, topo, T.card === "rgba(30,111,217,.08)" ? "#dbe8fa" : "rgba(255,255,255,.18)", T.fg);
       const tt = ajustar(ctx, slide.titulo, larg, 200, 72, 40, 800, 1.12);
-      let y = escrever(ctx, tt, M, topo + 100, T.fg, 800) + 26;
+      let y = escrever(ctx, tt, M, topo + 100, corTit, 800) + 26;
       const sb = ajustar(ctx, slide.texto, larg, (base - y) * .55, 40, 24, 500, 1.3);
       y = escrever(ctx, sb, M, y, T.sub, 500) + 50;
       const cta = "💾 Salve para consultar depois\n📤 Envie para um colega";
@@ -102,7 +115,7 @@
       ctx.fillStyle = T.acc; ctx.beginPath(); ctx.arc(M + 34, topo + 34, 34, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = T.bg; ctx.font = `800 34px ${FONTE}`; ctx.textBaseline = "middle"; const n = String(idx); ctx.fillText(n, M + 34 - ctx.measureText(n).width / 2, topo + 36);
       const tt = ajustar(ctx, slide.titulo, larg, 260, 78, 42, 800, 1.12);
-      let y = escrever(ctx, tt, M, topo + 100, T.fg, 800) + 36;
+      let y = escrever(ctx, tt, M, topo + 100, corTit, 800) + 36;
       const sb = ajustar(ctx, slide.texto, larg - 50, base - y - 40, 50, 26, 500, 1.35);
       const h = sb.l.length * sb.s * sb.lh + 60;
       ctx.fillStyle = T.card; ctx.beginPath(); ctx.roundRect(M - 10, y - 10, larg + 20, Math.min(h, base - y), 28); ctx.fill();
@@ -271,7 +284,7 @@ ${A.textoParaIA(art, A.cacheGet(pmid, "full"))}` });
     $("#igBaixarTodos").addEventListener("click", async () => { for (let i = 0; i < st.slides.length; i++) await baixarPNG(i); });
 
     editores(); legenda();
-    (document.fonts ? document.fonts.load(`800 40px Montserrat`).catch(() => {}) : Promise.resolve()).then(render);
+    (document.fonts ? Promise.all(["800 40px Montserrat", "600 40px Cinzel", "600 40px 'Cormorant Garamond'", "italic 500 40px 'Cormorant Garamond'"].map(f => document.fonts.load(f))).catch(() => {}) : Promise.resolve()).then(render);
     if (pmidInicial && !st.slides.some(s => s.texto.includes(pmidInicial))) $("#igMsg").innerHTML = `<div class="info">Artigo ${esc(pmidInicial)} selecionado. Clique em gerar.</div>`;
   }
 

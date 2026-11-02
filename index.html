@@ -3,18 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FisioRaciocínio — Estudo e Raciocínio Clínico</title>
+  <title>Alyson Tavares — Estudo e Raciocínio Clínico</title>
   <meta name="description" content="Sistema de estudo e apoio ao raciocínio clínico em fisioterapia musculoesquelética: avaliação, hipóteses, reparo tecidual, prognóstico, anatomia e evidências.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Montserrat:wght@500;600;700;800&display=swap">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b3b2c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Alyson Tavares">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦴</text></svg>">
+  <link rel="icon" href="icons/logo.svg" type="image/svg+xml"><text y='.9em' font-size='90'>🦴</text></svg>">
 </head>
 <body>
   <header class="topbar">
     <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
-    <a href="#/" class="brand"><span class="logo">🦴</span> FisioRaciocínio</a>
+    <a href="#/" class="brand" aria-label="Início"></a>
     <div class="search-wrap">
       <input id="busca" type="search" placeholder="Buscar condição, teste, músculo, nervo…" autocomplete="off" aria-label="Busca global">
       <div id="buscaRes" class="search-res" hidden></div>
@@ -39,7 +45,8 @@
     <a href="#/artigos" data-r="artigos">📰 Artigos (PubMed)</a>
     <a href="#/instagram" data-r="instagram">📸 Posts para Instagram</a>
     <a href="#/reels" data-r="reels">🎬 Reels com roteiro</a>
-    <a href="#/ia" data-r="ia">⚙️ Configurar IA</a>
+    <a href="#/ia" data-r="ia">⚙️ Configurações (IA e marca)</a>
+    <button class="btn instalar" id="btnInstalar" hidden>📲 Instalar o app</button>
     <div class="nav-foot">Ferramenta educacional de apoio ao raciocínio. Não substitui o julgamento clínico, a avaliação presencial nem a leitura das fontes originais.</div>
   </nav>
 
@@ -53,6 +60,7 @@
   <script src="js/data/evidencias.js"></script>
   <script src="js/data/clinica.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/marca.js"></script>
   <script src="js/ia.js"></script>
   <script src="js/artigos.js"></script>
   <script src="js/instagram.js"></script>
