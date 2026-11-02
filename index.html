@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FisioRaciocínio — Estudo e Raciocínio Clínico</title>
+  <meta name="description" content="Sistema de estudo e apoio ao raciocínio clínico em fisioterapia musculoesquelética: avaliação, hipóteses, reparo tecidual, prognóstico, anatomia e evidências.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦴</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menu">☰</button>
+    <a href="#/" class="brand"><span class="logo">🦴</span> FisioRaciocínio</a>
+    <div class="search-wrap">
+      <input id="busca" type="search" placeholder="Buscar condição, teste, músculo, nervo…" autocomplete="off" aria-label="Busca global">
+      <div id="buscaRes" class="search-res" hidden></div>
+    </div>
+    <button id="temaBtn" class="icon-btn" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
+  </header>
+
+  <nav class="sidebar" id="sidebar" aria-label="Módulos">
+    <a href="#/" data-r="">🏠 Início</a>
+    <div class="nav-sec">Prática clínica</div>
+    <a href="#/avaliacao" data-r="avaliacao">📋 Avaliação completa</a>
+    <a href="#/raciocinio" data-r="raciocinio">🧠 Raciocínio clínico</a>
+    <a href="#/reparo" data-r="reparo">🩹 Reparo tecidual e fases</a>
+    <a href="#/condicoes" data-r="condicoes">📚 Condições e condutas</a>
+    <a href="#/testes" data-r="testes">🔍 Testes especiais</a>
+    <a href="#/ferramentas" data-r="ferramentas">🧮 Escalas e prescrição</a>
+    <div class="nav-sec">Conhecimento</div>
+    <a href="#/anatomia" data-r="anatomia">🦵 Anatomia aplicada</a>
+    <a href="#/evidencias" data-r="evidencias">🔬 Evidências e guidelines</a>
+    <a href="#/estudo" data-r="estudo">🎓 Estudo: flashcards, quiz e casos</a>
+    <div class="nav-foot">Ferramenta educacional de apoio ao raciocínio. Não substitui o julgamento clínico, a avaliação presencial nem a leitura das fontes originais.</div>
+  </nav>
+
+  <main id="app" tabindex="-1"></main>
+
+  <script src="js/data/tecidos.js"></script>
+  <script src="js/data/achados.js"></script>
+  <script src="js/data/condicoes.js"></script>
+  <script src="js/data/testes.js"></script>
+  <script src="js/data/anatomia.js"></script>
+  <script src="js/data/evidencias.js"></script>
+  <script src="js/data/clinica.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
