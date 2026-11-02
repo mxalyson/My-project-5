@@ -177,7 +177,7 @@
     const ouro = T.marca ? MK.ouro(ctx, SAFE.left, W - SAFE.right) : null;
     const corTit = ouro || T.fg, corDest = T.marca ? T.fg : T.acc, corTxt = T.fg, corTxtDest = ouro || T.acc;
     const entrada = ease(local / .45), saida = i < st.cenas.length - 1 ? 1 - ease((local - (d - .25)) / .25) : 1;
-    const x = SAFE.left, larg = W - SAFE.left - SAFE.right, topo = SAFE.top, base = H - SAFE.bottom;
+    const x = SAFE.left, larg = W - SAFE.left - SAFE.right - (T.marca ? 80 : 0), topo = SAFE.top, base = H - SAFE.bottom;
     const areaAlt = (st.legendas ? base - 260 : base) - topo;
     ctx.save(); ctx.globalAlpha = saida;
     const zoom = 1 + .025 * (local / d); ctx.translate(W / 2, H / 2); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H / 2);
@@ -634,7 +634,7 @@ ${fonteTexto}` });
     });
 
     editores(); atualizaDur();
-    const fontes = ["800 40px Montserrat", "600 40px Cinzel", "800 40px Cinzel", "600 40px 'Cormorant Garamond'"];
+    const fontes = ["800 40px Montserrat", "600 40px 'Josefin Sans'", "700 40px 'Josefin Sans'", "400 40px 'Josefin Sans'", "600 40px 'Cormorant Garamond'"];
     Promise.all([carregarTudo(), MK.pronto, document.fonts ? Promise.all(fontes.map(f => document.fonts.load(f))) : null].map(p => Promise.resolve(p).catch(() => {}))).then(() => { editores(); atualizaDur(); desenhar(); });
     desenhar();
   }

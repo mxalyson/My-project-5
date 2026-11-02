@@ -16,7 +16,7 @@
   const TEMA = {
     nome: "Marca — verde e dourado", marca: true,
     bg: "#4a6c5e", bg2: "#3a5649", fg: "#f4ecd8", acc: "#d6b26a", sub: "#e7dcc0", card: "rgba(214,178,106,.10)",
-    fTit: '"Cinzel", "Cormorant Garamond", Georgia, serif', fCorpo: '"Cormorant Garamond", Georgia, serif'
+    fTit: '"Josefin Sans", "Montserrat", sans-serif', fCorpo: '"Cormorant Garamond", Georgia, serif'
   };
   function ouro(ctx, x0, x1) {
     const g = ctx.createLinearGradient(x0, 0, x1, 0);

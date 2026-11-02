@@ -284,7 +284,7 @@ ${A.textoParaIA(art, A.cacheGet(pmid, "full"))}` });
     $("#igBaixarTodos").addEventListener("click", async () => { for (let i = 0; i < st.slides.length; i++) await baixarPNG(i); });
 
     editores(); legenda();
-    (document.fonts ? Promise.all([window.MARCA.pronto, "800 40px Montserrat", "600 40px Cinzel", "600 40px 'Cormorant Garamond'", "italic 500 40px 'Cormorant Garamond'"].map(f => typeof f === "string" ? document.fonts.load(f) : f)).catch(() => {}) : Promise.resolve()).then(render);
+    (document.fonts ? Promise.all([window.MARCA.pronto, "800 40px Montserrat", "600 40px 'Josefin Sans'", "700 40px 'Josefin Sans'", "400 40px 'Josefin Sans'", "600 40px 'Cormorant Garamond'", "italic 500 40px 'Cormorant Garamond'"].map(f => typeof f === "string" ? document.fonts.load(f) : f)).catch(() => {}) : Promise.resolve()).then(render);
     if (pmidInicial && !st.slides.some(s => s.texto.includes(pmidInicial))) $("#igMsg").innerHTML = `<div class="info">Artigo ${esc(pmidInicial)} selecionado. Clique em gerar.</div>`;
   }
 
