@@ -1,5 +1,5 @@
 /* Service worker: o app abre offline. APIs externas (PubMed, Europe PMC, Claude) sempre usam a rede. */
-const VERSAO = "fisio-v9";
+const VERSAO = "fisio-v10";
 const ARQUIVOS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/style.css",
   "./js/app.js", "./js/marca.js", "./js/ia.js", "./js/artigos.js", "./js/instagram.js", "./js/reels.js",

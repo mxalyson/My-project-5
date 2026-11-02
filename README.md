@@ -26,7 +26,7 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável 
 | 📰 **Artigos (PubMed)** | Busca no PubMed (E-utilities) com filtros de desenho/data e conversão de pergunta clínica em busca; página do artigo com resumo, tradução, **texto completo** (artigos de acesso aberto via Europe PMC), **avaliação de qualidade** (triagem automática PEDro/AMSTAR-2 + avaliação crítica por IA com risco de viés e GRADE), **extração** (PICO, dose FITT, resultados com IC e relevância clínica, o que importa/não importa, glossário), notas e biblioteca exportável (.json/.md). |
 | 📸 **Posts para Instagram** | Carrosséis (feed 4:5, quadrado, story) gerados a partir de artigos, condições do sistema ou texto livre; 5 temas, edição de cada slide, exportação em PNG, legenda com contador de caracteres/hashtags. |
 | 🎬 **Reels — editor** | Roteiro falado natural a partir de artigo ou condição; editor com linha do tempo; **voz gravada por cena** (regrave só o trecho que errar, com corte automático de silêncio) ou gravação única com teleprompter; **fundo com foto ou vídeo próprio** por cena (com véu para leitura); **trilha musical** com fade e abaixamento automático sob a voz; volumes; legendas sincronizadas; exporta vídeo com áudio (MP4/WebM), .SRT, roteiro e capa. |
-| 🎨 **Identidade visual** | Tema verde-escuro e dourado com tipografia serifada no app, nos posts e nos Reels; nome, monograma, @, lema e rodapé configuráveis em ⚙️ Configurações. |
+| 🎨 **Identidade visual** | Logo oficial, verde da marca (#4A6C5E) e dourado, títulos em Josefin Sans e lema em itálico serifado — no app, nos posts e nos Reels; nome, @, lema e rodapé configuráveis em ⚙️ Configurações. |
 | ⚙️ **IA (opcional)** | Tradução, avaliação, extração e textos de posts usam a API da Claude com a chave do próprio usuário (salva só no navegador). Sem chave, tudo funciona com recursos automáticos básicos. |
 | 🎓 **Estudo** | Flashcards com repetição espaçada (Leitner), quiz gerado automaticamente e casos clínicos comentados. |
 
@@ -40,7 +40,7 @@ js/ia.js               # Claude API (SDK oficial via esm.sh) + tela de configura
 js/artigos.js          # PubMed, Europe PMC, avaliação, tradução, extração, biblioteca
 js/instagram.js        # gerador de carrosséis em canvas
 js/reels.js            # editor de Reels: roteiro, linha do tempo, voz por cena, mídia, música, exportação
-js/marca.js            # identidade visual (tema, monograma, ornamentos) e instalação do app
+js/marca.js            # identidade visual (logo, tema, ornamentos) e instalação do app
 sw.js, manifest.webmanifest, icons/  # app instalável e offline
 .github/workflows/pages.yml          # publicação no GitHub Pages
 js/data/achados.js     # achados clínicos, regiões, red/yellow flags
