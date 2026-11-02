@@ -4,7 +4,7 @@
 
 Sistema de estudo e apoio ao raciocínio clínico em **fisioterapia musculoesquelética** — da avaliação à conduta, com base em diretrizes e artigos de alta qualidade.
 
-Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável como app** (PWA): no celular, abra o link e use "Adicionar à tela inicial"/"Instalar app". Funciona offline nas partes que não dependem de PubMed ou IA. Os dados ficam salvos apenas no aparelho (localStorage e IndexedDB).
+Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável como app** (PWA): no celular, abra o link e use "Adicionar à tela inicial"/"Instalar app". Funciona offline nas partes que não dependem de PubMed ou IA. Os dados ficam salvos apenas no aparelho (localStorage e IndexedDB) — use o **backup** em ⚙️ Configurações.
 
 ### Publicar (GitHub Pages)
 
@@ -15,18 +15,23 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável 
 
 | Módulo | O que faz |
 |---|---|
+| 👥 **Pacientes** | Cadastro (com registro de consentimento LGPD), sessões no formato SOAP, gráficos de dor e desfechos com interpretação pelo MCID, vínculo com avaliações e programas, relatório de alta em PDF com a marca. |
+| 🏋️ **Exercícios e Pilates** | Biblioteca de 88 exercícios (mobilidade, força, core, equilíbrio, retorno ao esporte, Pilates solo, Reformer, Cadillac, Chair e Barrel) com dose, execução, cuidados e progressão; montagem de programas por condição e fase do reparo; PDF com a marca e envio por WhatsApp. |
 | 📋 **Avaliação completa** | Ficha guiada em 6 etapas (identificação, triagem de red/yellow flags, história da dor, exame físico com testes especiais, desfechos/STarT Back, síntese). A síntese gera automaticamente: hipóteses ranqueadas, fase do reparo tecidual, SINSS, tipo de dor, prognóstico com modificadores do paciente, conduta por fase, diagnóstico pela CIF e plano de reavaliação (MCID). Imprimir/exportar/importar JSON. |
 | 🧠 **Raciocínio clínico** | Gerador de hipóteses por região a partir dos achados, mostrando o que favorece, o que contradiz, o que falta perguntar, testes sugeridos (Sn/Sp) e diferenciais. Modelo hipotético-dedutivo, categorias de hipóteses, tipos de dor, SINSS, irritabilidade e vieses cognitivos. |
 | 🩹 **Reparo tecidual** | Fases inflamatória, proliferativa e de remodelação (biologia, sinais, objetivos, conduta), tempos de reparo de 8 tecidos e estimador de fase. |
-| 📚 **Condições (33)** | Lombar, cervical, ombro, cotovelo, punho, quadril, joelho, tornozelo/pé: resumo, diferenciais, quando encaminhar, testes, prognóstico (fatores favoráveis/desfavoráveis), conduta por fase e o que dizem as evidências. |
-| 🔍 **Testes especiais (47)** | Execução, critério de positividade, Sn/Sp, LR+/LR−, fonte e calculadora de probabilidade pós-teste (Bayes). |
+| 📚 **Condições (41)** | Lombar, cervical, ombro, cotovelo, punho, quadril, joelho, tornozelo/pé, ATM, pós-operatórios (LCA, manguito, artroplastias de joelho e quadril), fibromialgia, idosos/quedas e diástase pós-parto: resumo, diferenciais, quando encaminhar, testes, prognóstico (fatores favoráveis/desfavoráveis), conduta por fase e o que dizem as evidências. |
+| 🔍 **Testes especiais (51)** | Execução, critério de positividade, Sn/Sp, LR+/LR−, fonte e calculadora de probabilidade pós-teste (Bayes). |
 | 🧮 **Escalas e prescrição** | Red/yellow flags, STarT Back interativo, PROMs com MCID, Oxford, end-feel, parâmetros de treino resistido, 1RM, regra de monitoramento da dor, critérios e LSI para retorno ao esporte. |
 | 🦵 **Anatomia aplicada** | 79 músculos (origem, inserção, inervação, ação/relevância clínica), ossos, nervos periféricos, dermátomos/miótomos/reflexos, artrocinemática e padrões capsulares. |
 | 🔬 **Evidências** | O que fazer / não fazer / incerto, guidelines por condição, 11 recomendações (Lin et al. 2020), níveis de evidência e GRADE, leitura crítica, calculadora PEDro, interpretação de IC × MCID e NNT, busca PICO no PubMed com filtros, glossário PT↔EN e fontes confiáveis. |
 | 📰 **Artigos (PubMed)** | Busca no PubMed (E-utilities) com filtros de desenho/data e conversão de pergunta clínica em busca; página do artigo com resumo, tradução, **texto completo** (artigos de acesso aberto via Europe PMC), **avaliação de qualidade** (triagem automática PEDro/AMSTAR-2 + avaliação crítica por IA com risco de viés e GRADE), **extração** (PICO, dose FITT, resultados com IC e relevância clínica, o que importa/não importa, glossário), notas e biblioteca exportável (.json/.md). |
+| 🔔 **Novidades científicas** | Temas acompanhados no PubMed (Pilates, dor lombar, LCA etc. ou personalizados), contagem de artigos novos desde a última visita, aviso no menu e resumo semanal com IA. |
+| 🗓 **Planejamento de conteúdo** | Calendário editorial com status, banco de ideias (dúvidas de pacientes) e **kit do artigo**: carrossel + Reels + sequência de stories gerados e agendados de uma vez. |
 | 📸 **Posts para Instagram** | Carrosséis (feed 4:5, quadrado, story) gerados a partir de artigos, condições do sistema ou texto livre; 5 temas, edição de cada slide, exportação em PNG, legenda com contador de caracteres/hashtags. |
 | 🎬 **Reels — editor** | Roteiro falado natural a partir de artigo ou condição; editor com linha do tempo; **voz gravada por cena** (regrave só o trecho que errar, com corte automático de silêncio) ou gravação única com teleprompter; **fundo com foto ou vídeo próprio** por cena (com véu para leitura); **trilha musical** com fade e abaixamento automático sob a voz; volumes; legendas sincronizadas; exporta vídeo com áudio (MP4/WebM), .SRT, roteiro e capa. |
 | 🎨 **Identidade visual** | Logo oficial, verde da marca (#4A6C5E) e dourado, títulos em Josefin Sans e lema em itálico serifado — no app, nos posts e nos Reels; nome, @, lema e rodapé configuráveis em ⚙️ Configurações. |
+| 💾 **Backup** | Arquivo único com todos os dados e mídias, com criptografia opcional por senha (AES-GCM); restauração em outro aparelho; lembrete na tela inicial. |
 | ⚙️ **IA (opcional)** | Tradução, avaliação, extração e textos de posts usam a API da Claude com a chave do próprio usuário (salva só no navegador). Sem chave, tudo funciona com recursos automáticos básicos. |
 | 🎓 **Estudo** | Flashcards com repetição espaçada (Leitner), quiz gerado automaticamente e casos clínicos comentados. |
 
@@ -50,6 +55,12 @@ js/data/tecidos.js     # fases do reparo e tecidos
 js/data/anatomia.js    # músculos, ossos, nervos, dermátomos, articulações
 js/data/evidencias.js  # guidelines, níveis de evidência, glossário
 js/data/clinica.js     # escalas, prescrição, casos clínicos
+js/data/exercicios.js  # biblioteca de exercícios e Pilates
+js/pacientes.js        # pacientes, sessões, evolução, alta
+js/prescricao.js       # programas de exercícios (PDF/WhatsApp)
+js/novidades.js        # alertas de artigos novos no PubMed
+js/conteudo.js         # calendário, ideias e kit do artigo
+js/backup.js           # backup/restauração com criptografia
 ```
 
 Para adicionar uma condição, inclua um objeto em `CONDICOES` usando chaves existentes de `ACHADOS` e `TESTES`.

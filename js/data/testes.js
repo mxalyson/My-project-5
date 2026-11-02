@@ -140,5 +140,16 @@ window.TESTES = [
   { id: "arc_aquiles", nome: "Palpação do tendão calcâneo (2–6 cm)", regiao: "tornozelo", objetivo: "Tendinopatia do calcâneo (porção média)",
     execucao: "Palpação em pinça da porção média; observar espessamento.", positivo: "Dor localizada e espessamento.", sn: 0.58, sp: 0.84, fonte: "Hutchison et al., 2013; Martin et al., JOSPT CPG 2018", nota: "" },
   { id: "windlass", nome: "Windlass / dor à palpação medial do calcâneo", regiao: "tornozelo", objetivo: "Fasciopatia plantar",
-    execucao: "Dorsiflexão passiva do hálux em pé.", positivo: "Dor na inserção medial da fáscia.", sn: 0.32, sp: 1.0, fonte: "De Garceau et al., 2003", nota: "Clássico: dor nos primeiros passos da manhã." }
+    execucao: "Dorsiflexão passiva do hálux em pé.", positivo: "Dor na inserção medial da fáscia.", sn: 0.32, sp: 1.0, fonte: "De Garceau et al., 2003", nota: "Clássico: dor nos primeiros passos da manhã." },
+
+  // ---------- GLOBAL / ATM ----------
+  { id: "tug", nome: "Timed Up and Go (TUG)", regiao: "global", objetivo: "Mobilidade funcional e risco de quedas em idosos",
+    execucao: "Levantar de uma cadeira com braços, caminhar 3 m, virar, voltar e sentar, em ritmo habitual e seguro.", positivo: "Tempo ≥ 13,5 s sugere risco aumentado de quedas.",
+    sn: 0.87, sp: 0.87, fonte: "Shumway-Cook et al., Phys Ther 2000 (amostra pequena)", nota: "Revisões posteriores mostram capacidade limitada de prever quedas isoladamente — use junto com história de quedas, força e equilíbrio (World Falls Guidelines 2022)." },
+  { id: "sentar_levantar", nome: "Sentar e levantar 5 vezes / 30 segundos", regiao: "global", objetivo: "Força funcional de membros inferiores (sarcopenia, quedas)",
+    execucao: "Braços cruzados no peito: levantar e sentar 5 vezes o mais rápido possível (ou contar quantas em 30 s).", positivo: "5 repetições em > 15 s indicam baixa força (critério EWGSOP2 para sarcopenia provável).", sn: null, sp: null, fonte: "Cruz-Jentoft et al., Age Ageing 2019 (EWGSOP2)", nota: "Combine com força de preensão." },
+  { id: "abertura_bucal", nome: "Abertura bucal máxima e padrão de abertura", regiao: "atm", objetivo: "Disfunção temporomandibular",
+    execucao: "Medir a distância interincisal na abertura máxima sem dor e com dor; observar desvio e estalidos.", positivo: "Abertura < 35–40 mm, desvio em 'S' ou deflexão, dor familiar à palpação dos masseteres/temporais ou da ATM.", sn: null, sp: null, fonte: "Schiffman et al., DC/TMD 2014", nota: "Os critérios DC/TMD padronizam o diagnóstico." },
+  { id: "dra_palpacao", nome: "Distância inter-retos (diástase) por palpação/régua", regiao: "global", objetivo: "Diástase dos retos abdominais",
+    execucao: "Decúbito dorsal, elevação da cabeça e ombros (curl-up): medir a separação entre os retos acima, na altura e abaixo do umbigo.", positivo: "Separação ≳ 2 dedos (≈ 2 cm) e/ou abaulamento da linha média; avaliar também a tensão da linha alba.", sn: null, sp: null, fonte: "Benjamin et al., Physiotherapy 2014; ultrassom é mais preciso", nota: "A qualidade da linha alba (tensão) importa tanto quanto a distância." }
 ];

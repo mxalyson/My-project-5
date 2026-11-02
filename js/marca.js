@@ -91,5 +91,18 @@
     window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
-  window.MARCA = { get, set, PADRAO, TEMA, ouro, fundo, monograma, logo, assinatura, espacado, rodape, IMG, pronto };
+  // Impressão/PDF com a marca (programas, relatórios). O navegador oferece "Salvar como PDF".
+  function imprimir(titulo, html) {
+    const m = get(); let area = document.getElementById("printArea");
+    if (!area) { area = document.createElement("div"); area.id = "printArea"; document.body.appendChild(area); }
+    area.innerHTML = `<header class="pa-head"><img src="icons/logo-verde.png" alt=""><div><div class="pa-nome">${FR.esc(m.nome)}</div><div class="pa-sub">${FR.esc(m.sub)}</div></div></header>
+      <h1 class="pa-tit">${FR.esc(titulo)}</h1>${html}
+      <footer class="pa-foot">${FR.esc(m.nome)} · ${FR.esc(m.sub)} · ${FR.esc(m.perfil)}<br><small>${FR.esc(m.rodape)}</small></footer>`;
+    document.body.classList.add("imprimindo");
+    const fim = () => { document.body.classList.remove("imprimindo"); window.removeEventListener("afterprint", fim); };
+    window.addEventListener("afterprint", fim);
+    const img = area.querySelector("img"); (img.complete ? Promise.resolve() : img.decode().catch(() => {})).then(() => setTimeout(() => window.print(), 50));
+  }
+
+  window.MARCA = { imprimir, get, set, PADRAO, TEMA, ouro, fundo, monograma, logo, assinatura, espacado, rodape, IMG, pronto };
 })();

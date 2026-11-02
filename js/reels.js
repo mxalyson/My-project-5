@@ -640,4 +640,21 @@ ${fonteTexto}` });
   }
 
   rotas.reels = viewReels;
+  // usado pelo "Kit do artigo" (planejamento de conteúdo)
+  window.REELS = {
+    async gerarDeArtigo(pmid, usarIA) {
+      const A = window.ARTIGOS; let art = A.cacheGet(pmid, "meta"); if (!art) art = await A.efetch(pmid);
+      const ext = A.cacheGet(pmid, "ext"); const antigas = st.cenas.flatMap(c => [c.audioId, c.midiaId]).filter(Boolean);
+      if (usarIA) {
+        const r = await roteiroIA((ext ? "DADOS EXTRAÍDOS: " + JSON.stringify(ext) + "\n\n" : "") + A.textoParaIA(art, A.cacheGet(pmid, "full")));
+        st.cenas = r.cenas.map(c => ({ ...c, dur: c.tipo === "referencia" ? 2.5 : 0 })); st.legenda = r.legenda; st.hashtags = r.hashtags.map(h => h.replace(/^#/, "")); st.dicas = r.dicas_gravacao; st.titulo = r.titulo;
+      } else {
+        st.cenas = roteiroArtigo(art, ext); st.dicas = [];
+        st.legenda = ext ? `${ext.titulo_pt}\n\n${ext.mensagem_para_pratica}\n\n📚 ${art.autores[0] || ""} et al. ${art.revista}, ${art.ano}. PMID ${pmid}\n\nConteúdo educativo; não substitui avaliação individual.` : "";
+        st.hashtags = ["fisioterapia", "fisioterapiabaseadaemevidencias", "ciencia"];
+      }
+      for (const id of antigas) await apagar(id);
+      salvar();
+    }
+  };
 })();

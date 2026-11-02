@@ -189,3 +189,39 @@ code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; word-b
 
 [hidden] { display: none !important; }
 .topbar .search-wrap input[type=search] { background: rgba(255,255,255,.08); color: #f1ead9; border-color: rgba(201,163,91,.6); }
+
+/* Área de impressão com a marca */
+#printArea { display: none; }
+@media print {
+  body.imprimindo > *:not(#printArea) { display: none !important; }
+  body.imprimindo #printArea { display: block; color: #1d2a24; font-family: "Montserrat", sans-serif; font-size: 11.5pt; }
+  .pa-head { display: flex; align-items: center; gap: 14px; border-bottom: 2px solid #c9a35b; padding-bottom: 10px; margin-bottom: 14px; }
+  .pa-head img { width: 70px; }
+  .pa-nome { font-family: "Josefin Sans", sans-serif; letter-spacing: .16em; text-transform: uppercase; font-size: 16pt; color: #4a6c5e; }
+  .pa-sub { letter-spacing: .25em; text-transform: uppercase; font-size: 8pt; color: #8a7a52; }
+  .pa-tit { font-family: "Josefin Sans", sans-serif; color: #4a6c5e; font-size: 15pt; margin: 6px 0 10px; }
+  #printArea table { width: 100%; border-collapse: collapse; }
+  #printArea th, #printArea td { border-bottom: 1px solid #ddd; padding: 6px; text-align: left; vertical-align: top; }
+  #printArea th { background: #eef3f0; }
+  .pa-ex { break-inside: avoid; border-bottom: 1px solid #e3d8bd; padding: 8px 0; }
+  .pa-foot { margin-top: 24px; border-top: 1px solid #c9a35b; padding-top: 8px; text-align: center; font-size: 9pt; color: #4a6c5e; }
+}
+
+/* Exercícios, pacientes, novidades, calendário */
+.ex-card summary { font-weight: 500; }
+.pg-item { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; background: var(--surface); }
+.nbadge { background: #c0563f; color: #fff; border-radius: 999px; font-size: .7rem; padding: 1px 7px; margin-left: 6px; font-weight: 700; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+.cal-h { text-align: center; font-size: .75rem; color: var(--muted); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.cal-d { min-height: 92px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; background: var(--surface); cursor: pointer; overflow: hidden; }
+.cal-d:hover { border-color: var(--gold); }
+.cal-d.vazio { background: transparent; border: 0; cursor: default; }
+.cal-d.hoje { border: 2px solid var(--gold); }
+.cal-n { font-size: .75rem; color: var(--muted); }
+.cal-i { font-size: .72rem; border-radius: 6px; padding: 2px 5px; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: var(--surface2); border-left: 3px solid var(--muted); }
+.cal-i.st-ideia { border-left-color: #9aa39d; }
+.cal-i.st-roteiro { border-left-color: #c9a35b; }
+.cal-i.st-produzido { border-left-color: #4a6c5e; }
+.cal-i.st-agendado { border-left-color: #3d7cc9; }
+.cal-i.st-publicado { border-left-color: #2e8b5f; background: var(--ok-weak); }
+@media (max-width: 860px) { .cal-d { min-height: 60px; } .cal-i { font-size: .62rem; } }

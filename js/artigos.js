@@ -437,5 +437,5 @@
 
   rotas.artigos = viewArtigos;
   rotas.artigo = viewArtigo;
-  window.ARTIGOS = { efetch, epmcInfo, classificar, extracaoSimples, cacheGet, bib, textoParaIA };
+  window.ARTIGOS = { efetch, epmcInfo, classificar, extracaoSimples, cacheGet, bib, textoParaIA, esearch, esummary, FILTROS, badgeDesenho };
 })();

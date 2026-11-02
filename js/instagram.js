@@ -289,4 +289,6 @@ ${A.textoParaIA(art, A.cacheGet(pmid, "full"))}` });
   }
 
   rotas.instagram = viewInstagram;
+  // usado pelo "Kit do artigo" (planejamento de conteúdo)
+  window.IG = { async gerarDeArtigo(pmid, usarIA) { await deArtigo(pmid, usarIA); salvar(); } };
 })();

@@ -589,6 +589,164 @@ window.CONDICOES = [
     },
     evidencia: [{ ref: "Koc TA et al. JOSPT 2023 — Plantar Heel Pain CPG (Revision 2023)", msg: "Terapia manual, alongamento, bandagem, órteses, educação e ondas de choque com recomendações; exercícios de fortalecimento recomendados." }, { ref: "Rathleff MS et al. Scand J Med Sci Sports 2015 (RCT)", msg: "Treino de força com carga alta melhorou função mais rápido que alongamento isolado em 3 meses." }],
     desfechos: ["FFI (Foot Function Index)", "FAAM", "NPRS primeiros passos"]
+  },
+
+  // =============================== PÓS-OPERATÓRIOS ===============================
+  {
+    id: "pos_lca", nome: "Pós-operatório de reconstrução do LCA", regiao: "joelho", tecido: "ligamento",
+    resumo: "Reabilitação guiada por critérios (não só pelo tempo) após reconstrução do LCA. O enxerto passa por necrose, revascularização e remodelação (ligamentização) ao longo de 1 ano ou mais. Prioridades iniciais: extensão completa, controle de derrame e ativação do quadríceps.",
+    achados: { posop: 5, j_estalo: 2, j_falseio: 1, jovem: 1, esporte: 1, edema: 1 },
+    contra: { idoso: 2, insidioso: 3 },
+    testes: ["lachman", "step_down"],
+    diferencial: ["Artrofibrose / perda de extensão (ciclope)", "Infecção pós-operatória", "TVP", "Lesão meniscal associada / sutura (restrições específicas)", "Dor femoropatelar pós-operatória"],
+    encaminhar: ["Febre, calor e vermelhidão crescentes, secreção na ferida", "Panturrilha dolorosa e edemaciada (TVP)", "Perda de extensão que não melhora em 4–6 semanas", "Falseio após o retorno"],
+    prognostico: {
+      texto: "A maioria retoma atividades diárias normais; o retorno ao esporte de pivô no nível prévio ocorre em cerca de metade a dois terços. Re-ruptura (do enxerto ou contralateral) é maior em jovens que retornam cedo; cumprir critérios objetivos e esperar ≥ 9 meses reduz o risco.",
+      bom: ["Extensão completa precoce", "Força de quadríceps simétrica (LSI ≥ 90%)", "Prontidão psicológica (ACL-RSI alto)", "Reabilitação supervisionada"],
+      ruim: ["Déficit de extensão", "Fraqueza persistente do quadríceps", "Retorno < 9 meses", "Idade < 20 anos com esporte de pivô", "Lesão meniscal/condral associada"]
+    },
+    conduta: {
+      inflamatoria: ["Semanas 0–2: controle do derrame (crioterapia, compressão), extensão passiva completa, ativação do quadríceps (isometria, elevação da perna estendida), carga conforme cirurgião", "Marcha sem claudicação e flexão progressiva"],
+      proliferativa: ["Semanas 2–12: força em cadeia fechada e aberta (cadeia aberta em amplitude protegida conforme cirurgião), equilíbrio, bicicleta", "Critérios para corrida (~3 meses): sem derrame, ADM completa, força ≥ 70–80% do outro lado"],
+      remodelacao: ["Meses 3–9+: pliometria, agilidade e esporte específico progressivos", "Alta para esporte: LSI ≥ 90% em força e hop tests, ≥ 9 meses, ACL-RSI e decisão compartilhada"]
+    },
+    evidencia: [
+      { ref: "van Melick N et al. BJSM 2016 — Evidence-based clinical practice update: ACL rehabilitation", msg: "Reabilitação baseada em critérios, exercícios em cadeia aberta e fechada, treino neuromuscular e testes objetivos para o retorno." },
+      { ref: "Kotsifaki R et al. BJSM 2023 — Aspetar clinical practice guideline on rehabilitation after ACL reconstruction", msg: "Diretriz com recomendações por fase e critérios de progressão e retorno ao esporte." },
+      { ref: "Grindem H et al. BJSM 2016 (Delaware-Oslo)", msg: "Retorno ≥ 9 meses e simetria de quadríceps reduziram re-lesões." }
+    ],
+    desfechos: ["IKDC", "KOOS", "ACL-RSI", "Hop tests", "Dinamometria do quadríceps (LSI)"]
+  },
+  {
+    id: "pos_manguito", nome: "Pós-operatório de reparo do manguito rotador", regiao: "ombro", tecido: "tendao",
+    resumo: "Após o reparo, o tendão cicatriza no osso lentamente (resistência inicial baixa). A reabilitação equilibra proteção do reparo e prevenção de rigidez, conforme tamanho da ruptura, qualidade do tecido e orientação do cirurgião.",
+    achados: { posop: 5, idoso: 1, meia: 1, o_fraqueza_re: 1 },
+    contra: { jovem: 1, insidioso: 2 },
+    testes: ["rotacao_ext_passiva"],
+    diferencial: ["Rigidez pós-operatória / capsulite", "Re-ruptura (perda de força súbita)", "Infecção", "Dor cervical referida"],
+    encaminhar: ["Perda súbita de força ou estalo com dor (possível re-ruptura)", "Sinais de infecção", "Rigidez acentuada que não progride"],
+    prognostico: { texto: "A maioria melhora dor e função de forma importante em 6–12 meses. Re-ruptura é mais frequente em rupturas grandes, idosos, tabagistas e tecido de má qualidade — e nem sempre causa sintomas.", bom: ["Ruptura pequena/média", "Boa qualidade tecidual", "Adesão à fase de proteção"], ruim: ["Ruptura grande/maciça", "Idade avançada", "Tabagismo", "Diabetes", "Atrofia gordurosa"] },
+    conduta: {
+      inflamatoria: ["Semanas 0–6: tipoia conforme cirurgião, pendular, ADM passiva protegida, mobilidade de cotovelo/punho/cervical, controle da dor", "Evitar contração ativa do manguito reparado nesta fase (salvo orientação)"],
+      proliferativa: ["Semanas 6–12: ADM ativo-assistida → ativa, isometrias submáximas, controle escapular"],
+      remodelacao: ["A partir de ~12 semanas: fortalecimento progressivo do manguito e deltoide; retorno a cargas pesadas/esporte entre 6 e 12 meses"]
+    },
+    evidencia: [
+      { ref: "Thigpen CA et al. J Shoulder Elbow Surg 2016 — ASSET consensus statement on rehabilitation after arthroscopic rotator cuff repair", msg: "Proteção inicial com ADM passiva controlada, progressão ativa e de força em fases; rupturas maiores pedem progressão mais lenta." }
+    ],
+    desfechos: ["SPADI", "WORC", "ADM", "Dinamometria de RE"]
+  },
+  {
+    id: "atj", nome: "Artroplastia total de joelho (pós-operatório)", regiao: "joelho", tecido: "cartilagem",
+    resumo: "Reabilitação após prótese de joelho: prioridade para extensão completa, flexão funcional (≥ 110°), força de quadríceps e marcha. Fraqueza do quadríceps pode persistir por anos se não for treinada.",
+    achados: { posop: 5, idoso: 3, edema: 1, j_crepitacao: 1 },
+    contra: { jovem: 3, esporte: 1 },
+    testes: ["tug", "sentar_levantar"],
+    diferencial: ["Infecção periprotética", "TVP", "Artrofibrose", "Dor referida do quadril/coluna", "Soltura da prótese (tardia)"],
+    encaminhar: ["Febre, calor/vermelhidão crescentes, secreção", "Sinais de TVP", "Flexão < 90° em 6 semanas (avaliar manipulação)", "Dor nova e intensa tardia"],
+    prognostico: { texto: "Melhora grande de dor e função na maioria; cerca de 10–20% mantém dor ou insatisfação. Exercício progressivo de força melhora função a médio prazo.", bom: ["Boa força pré-operatória", "Extensão completa precoce", "Expectativas realistas"], ruim: ["Dor intensa e catastrofização pré-operatória", "Obesidade", "Depressão", "Perda de extensão"] },
+    conduta: {
+      inflamatoria: ["Mobilização precoce (dia 0–1), marcha com auxiliar, extensão passiva e flexão progressiva, isometria de quadríceps, controle do edema"],
+      proliferativa: ["Fortalecimento progressivo de quadríceps e quadril, bicicleta, treino de marcha e escadas, equilíbrio"],
+      remodelacao: ["Força com carga moderada/alta, condicionamento aeróbico, retorno a atividades de baixo impacto"]
+    },
+    evidencia: [
+      { ref: "Jette DU et al. Phys Ther 2020 — Physical Therapist Management of Total Knee Arthroplasty (CPG)", msg: "Mobilização precoce, fortalecimento progressivo de alta intensidade, treino funcional e de equilíbrio; exercício pré-operatório pode ser considerado." },
+      { ref: "NICE NG157 (2020) — Joint replacement (primary): hip, knee and shoulder", msg: "Reabilitação e informação ao paciente como parte do cuidado; mobilização precoce." }
+    ],
+    desfechos: ["KOOS / Oxford Knee Score", "TUG", "Sentar-levantar 30 s", "ADM"]
+  },
+  {
+    id: "atq", nome: "Artroplastia total de quadril (pós-operatório)", regiao: "quadril", tecido: "cartilagem",
+    resumo: "Reabilitação após prótese de quadril: marcha, força de abdutores e extensores, independência funcional. Precauções de movimento dependem da via de acesso e da orientação do cirurgião.",
+    achados: { posop: 5, idoso: 3, q_inguinal: 1 },
+    contra: { jovem: 3 },
+    testes: ["tug", "sentar_levantar", "trendelenburg"],
+    diferencial: ["Luxação da prótese (dor súbita, encurtamento e rotação do membro)", "Infecção", "TVP", "Fratura periprotética", "Tendinopatia glútea pós-operatória"],
+    encaminhar: ["Dor súbita com deformidade (luxação) — urgência", "Sinais de infecção ou TVP"],
+    prognostico: { texto: "Um dos procedimentos com melhores resultados: grande maioria com alívio importante da dor e boa função. Fraqueza de abdutores e claudicação podem persistir sem treino.", bom: ["Boa função pré-operatória", "Adesão ao exercício"], ruim: ["Fraqueza importante de abdutores", "Comorbidades", "Dor em outras articulações"] },
+    conduta: {
+      inflamatoria: ["Marcha precoce com auxiliar, exercícios de bomba de tornozelo, isometrias, transferências seguras respeitando precauções da via de acesso"],
+      proliferativa: ["Fortalecimento de abdutores e extensores, sentar-levantar, escadas, equilíbrio"],
+      remodelacao: ["Força progressiva, treino de marcha sem auxiliar, atividades de baixo impacto (caminhada, bicicleta, natação)"]
+    },
+    evidencia: [{ ref: "NICE NG157 (2020) — Joint replacement (primary): hip, knee and shoulder", msg: "Mobilização precoce e reabilitação com informações claras ao paciente; precauções individualizadas." }],
+    desfechos: ["HOOS / Oxford Hip Score", "TUG", "Sentar-levantar 30 s", "Teste de caminhada de 6 min"]
+  },
+
+  // =============================== ATM ===============================
+  {
+    id: "dtm", nome: "Disfunção temporomandibular (DTM)", regiao: "atm", tecido: "musculo",
+    resumo: "Dor miofascial mastigatória e/ou alterações articulares da ATM (deslocamento de disco, artralgia). Associada a hábitos parafuncionais, estresse e outras dores crônicas. Diagnóstico padronizado pelos critérios DC/TMD.",
+    achados: { a_mastigar: 5, a_estalo: 3, a_abertura: 3, a_bruxismo: 3, a_cefaleia: 2 },
+    contra: { trauma: 1 },
+    testes: ["abertura_bucal"],
+    diferencial: ["Dor dentária / sinusite / otite", "Neuralgia do trigêmeo (choques breves)", "Arterite temporal (> 50 anos, claudicação mandibular — urgência)", "Cefaleia tensional", "Dor cervical referida"],
+    encaminhar: ["> 50 anos com cefaleia temporal nova, claudicação da mandíbula ou alterações visuais (arterite temporal)", "Travamento fechado agudo", "Dor dentária — cirurgião-dentista"],
+    prognostico: { texto: "A maioria dos casos é autolimitada ou melhora com cuidados conservadores; formas crônicas associam-se a fatores psicossociais e outras dores.", bom: ["Início recente", "Componente muscular predominante"], ruim: ["Dor generalizada associada", "Ansiedade/depressão", "Bruxismo persistente"] },
+    conduta: {
+      inflamatoria: ["Educação e autocuidado: dieta macia temporária, evitar apertar os dentes, consciência de hábitos", "Calor local, exercícios suaves de abertura controlada"],
+      proliferativa: ["Exercícios de coordenação e mobilidade mandibular, terapia manual (intra/extraoral), exercícios cervicais e posturais"],
+      remodelacao: ["Manutenção, manejo do estresse e do sono; placa oclusal a critério do dentista"]
+    },
+    evidencia: [{ ref: "Armijo-Olivo S et al. Phys Ther 2016 — Manual therapy and exercise for temporomandibular disorders (systematic review)", msg: "Exercício e terapia manual (isolados ou combinados) mostraram efeitos favoráveis sobre dor e abertura bucal." }, { ref: "Schiffman E et al. J Oral Facial Pain Headache 2014 — DC/TMD", msg: "Critérios diagnósticos padronizados para pesquisa e clínica." }],
+    desfechos: ["Abertura bucal (mm)", "NPRS", "Jaw Functional Limitation Scale (JFLS)"]
+  },
+
+  // =============================== GLOBAL ===============================
+  {
+    id: "fibromialgia", nome: "Fibromialgia / dor crônica generalizada (nociplástica)", regiao: "global", tecido: "musculo",
+    resumo: "Dor difusa persistente (> 3 meses) com fadiga, sono não reparador e alterações cognitivas, sem lesão tecidual que a explique — mecanismo nociplástico (sensibilização). Não é 'dor imaginária'.",
+    achados: { g_difusa: 6, g_fadiga: 4, insidioso: 1, rigidez_curta: 1 },
+    contra: { trauma: 2, l_deficit: 2 },
+    testes: [],
+    diferencial: ["Hipotireoidismo, deficiência de vitamina D", "Artrite reumatoide, lúpus, polimialgia reumática (> 50 anos, rigidez de cinturas)", "Depressão maior", "Apneia do sono", "Efeito de estatinas"],
+    encaminhar: ["Investigação médica inicial (exames para diagnósticos diferenciais)", "Depressão grave ou risco de suicídio — encaminhamento imediato"],
+    prognostico: { texto: "Condição crônica e flutuante; o objetivo é reduzir impacto e melhorar função. Exercício regular é a intervenção com melhor evidência.", bom: ["Adesão a exercício gradual", "Boa autoeficácia", "Sono melhorando"], ruim: ["Catastrofização", "Inatividade", "Uso excessivo de tratamentos passivos"] },
+    conduta: {
+      inflamatoria: ["Crises: reduzir sem parar (pacing), educação em neurociência da dor, sono e respiração"],
+      proliferativa: ["Exercício aeróbico de baixa intensidade e força leve, começando abaixo da tolerância e progredindo devagar (graded activity)", "Exercício aquático e Pilates como opções bem toleradas"],
+      remodelacao: ["Manutenção de atividade física regular, metas de participação (trabalho, lazer), abordagem multiprofissional"]
+    },
+    evidencia: [{ ref: "Macfarlane GJ et al. Ann Rheum Dis 2017 — EULAR revised recommendations for the management of fibromyalgia", msg: "Exercício foi a única recomendação 'forte'; terapias psicológicas e outras abordagens conforme a necessidade individual." }],
+    desfechos: ["FIQR (Fibromyalgia Impact Questionnaire)", "PSFS", "Qualidade do sono", "PCS"]
+  },
+  {
+    id: "quedas", nome: "Idoso com risco de quedas / fragilidade e sarcopenia", regiao: "global", tecido: "musculo",
+    resumo: "Quedas resultam de múltiplos fatores (força, equilíbrio, medicamentos, visão, ambiente, cognição). Sarcopenia = baixa força + baixa massa muscular; fragilidade aumenta risco de quedas, hospitalização e dependência.",
+    achados: { g_quedas: 6, g_lento: 4, idoso: 4, fraqueza: 2 },
+    contra: { jovem: 4 },
+    testes: ["tug", "sentar_levantar"],
+    diferencial: ["Hipotensão postural", "Efeito de medicamentos (sedativos, anti-hipertensivos)", "Neuropatia periférica", "Doença de Parkinson", "Déficit visual", "Vertigem posicional (VPPB)"],
+    encaminhar: ["Quedas recorrentes sem causa clara, síncope, tontura — avaliação médica", "Revisão de medicamentos (polifarmácia)", "Osteoporose não tratada"],
+    prognostico: { texto: "Programas de exercício com equilíbrio e força reduzem a taxa de quedas em idosos da comunidade em cerca de 1/4; benefícios exigem dose suficiente (≥ 3 h/semana somadas ao longo do tempo) e continuidade.", bom: ["Adesão ao exercício", "Ambiente seguro"], ruim: ["Múltiplas quedas prévias", "Déficit cognitivo", "Polifarmácia", "Medo de cair com restrição de atividade"] },
+    conduta: {
+      inflamatoria: ["Após queda com dor: descartar fratura; manter mobilidade segura"],
+      proliferativa: ["Exercício de equilíbrio desafiador + força progressiva de MMII (ex.: estilo Otago), marcha, sentar-levantar", "Orientação domiciliar (tapetes, iluminação, barras de apoio)"],
+      remodelacao: ["Manutenção a longo prazo, atividade em grupo (Pilates adaptado, tai chi), caminhada"]
+    },
+    evidencia: [
+      { ref: "Montero-Odasso M et al. Age Ageing 2022 — World guidelines for falls prevention and management for older adults", msg: "Estratificar risco; exercício de equilíbrio e força como base; avaliação multifatorial para alto risco." },
+      { ref: "Sherrington C et al. Cochrane 2019 — Exercise for preventing falls in older people living in the community", msg: "Exercício reduz a taxa de quedas (~23%); programas com equilíbrio e funcionais têm maior efeito." }
+    ],
+    desfechos: ["TUG", "Sentar-levantar 30 s / 5 vezes", "Velocidade de marcha", "Falls Efficacy Scale (FES-I)"]
+  },
+  {
+    id: "diastase", nome: "Diástase dos retos abdominais (gestação / pós-parto)", regiao: "global", tecido: "musculo",
+    resumo: "Separação dos retos abdominais com alargamento da linha alba, muito comum no fim da gestação e no pós-parto; parte resolve espontaneamente nos primeiros meses. Pode associar-se a dor lombopélvica e disfunções do assoalho pélvico.",
+    achados: { g_posparto: 5, g_abaulamento: 5, l_local: 1, l_gestacao: 2 },
+    contra: { idoso: 2 },
+    testes: ["dra_palpacao"],
+    diferencial: ["Hérnia umbilical ou epigástrica", "Dor lombopélvica da gestação (cintura pélvica)", "Disfunções do assoalho pélvico (incontinência, prolapso)"],
+    encaminhar: ["Hérnia (abaulamento localizado, dor, irredutível) — cirurgião", "Incontinência ou sintomas de prolapso — fisioterapia pélvica"],
+    prognostico: { texto: "Redução natural importante até ~8 semanas pós-parto, com estabilização depois; parte das mulheres mantém separação em 6–12 meses. Exercício pode ajudar, mas a evidência ainda é limitada e de baixa qualidade.", bom: ["Boa tensão da linha alba", "Exercício orientado precoce"], ruim: ["Separação grande", "Múltiplas gestações", "Hérnia associada"] },
+    conduta: {
+      inflamatoria: ["Pós-parto imediato: respiração, ativação do transverso e do assoalho pélvico, orientações para levantar e carregar o bebê"],
+      proliferativa: ["Exercícios progressivos de parede abdominal (incluindo curl-up controlado se a linha alba mantém tensão), Pilates solo adaptado"],
+      remodelacao: ["Retorno gradual ao exercício intenso e à corrida após avaliação do assoalho pélvico"]
+    },
+    evidencia: [{ ref: "Benjamin DR et al. Physiotherapy 2014 — Effects of exercise on diastasis of the rectus abdominis muscle (systematic review)", msg: "Evidência limitada: exercício na gestação pode reduzir a ocorrência; ensaios de alta qualidade ainda são necessários." }],
+    desfechos: ["Distância inter-retos (régua/ultrassom)", "ODI ou Pelvic Girdle Questionnaire", "Sintomas do assoalho pélvico"]
   }
 ];
 

@@ -7,7 +7,9 @@ window.REGIOES = [
   { id: "punho", nome: "Punho e mão" },
   { id: "quadril", nome: "Quadril e coxa" },
   { id: "joelho", nome: "Joelho" },
-  { id: "tornozelo", nome: "Tornozelo e pé" }
+  { id: "tornozelo", nome: "Tornozelo e pé" },
+  { id: "atm", nome: "ATM / face" },
+  { id: "global", nome: "Dor generalizada, idosos e gestação" }
 ];
 
 window.ACHADOS = {
@@ -28,7 +30,8 @@ window.ACHADOS = {
       rigidez_curta: "Rigidez matinal < 30 min",
       rigidez_longa: "Rigidez matinal > 30 min",
       parestesia: "Formigamento / dormência",
-      fraqueza: "Fraqueza percebida"
+      fraqueza: "Fraqueza percebida",
+      posop: "Pós-operatório (cirurgia recente)"
     }
   },
   lombar: {
@@ -122,6 +125,27 @@ window.ACHADOS = {
       j_crepitacao: "Crepitação",
       j_polo: "Dor localizada no polo inferior da patela",
       j_salto: "Esportes com salto (vôlei, basquete)"
+    }
+  },
+  atm: {
+    titulo: "ATM / face",
+    itens: {
+      a_mastigar: "Dor na face/ATM ao mastigar ou falar",
+      a_estalo: "Estalido ou crepitação na ATM",
+      a_abertura: "Abertura bucal limitada ou desvio ao abrir",
+      a_bruxismo: "Bruxismo / apertamento dentário, estresse",
+      a_cefaleia: "Cefaleia temporal ou dor no ouvido sem otite"
+    }
+  },
+  global: {
+    titulo: "Dor generalizada, idosos e gestação",
+    itens: {
+      g_difusa: "Dor difusa em várias regiões há mais de 3 meses",
+      g_fadiga: "Fadiga, sono não reparador, dificuldade de concentração",
+      g_quedas: "Queda no último ano ou medo de cair",
+      g_lento: "Marcha lenta / dificuldade para levantar da cadeira",
+      g_posparto: "Gestação recente / pós-parto",
+      g_abaulamento: "Abaulamento na linha média do abdome ao fazer esforço"
     }
   },
   tornozelo: {

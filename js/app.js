@@ -77,7 +77,7 @@
   function router() {
     const [r, ...args] = location.hash.replace(/^#\/?/, "").split("/");
     (rotas[r] || inicio)(...args.map(decodeURIComponent));
-    $$(".sidebar a").forEach(a => a.classList.toggle("ativo", a.dataset.r === ({ condicao: "condicoes", artigo: "artigos" }[r] || r)));
+    $$(".sidebar a").forEach(a => a.classList.toggle("ativo", a.dataset.r === ({ condicao: "condicoes", artigo: "artigos", paciente: "pacientes" }[r] || r)));
     $("#sidebar").classList.remove("aberto");
     window.scrollTo(0, 0);
   }
@@ -104,6 +104,8 @@
       </div>
       <div class="grid">
         ${[
+          ["#/pacientes", "👥", "Pacientes", "Cadastro, sessões (SOAP), gráficos de evolução com MCID e relatório de alta em PDF."],
+          ["#/exercicios", "🏋️", `Exercícios e Pilates (${(window.EXERCICIOS || []).length})`, "Biblioteca com Pilates solo e aparelhos; programas por condição e fase, em PDF ou WhatsApp."],
           ["#/avaliacao", "📋", "Avaliação completa", "Ficha guiada em 6 etapas com síntese automática, CIF e relatório para impressão."],
           ["#/raciocinio", "🧠", "Raciocínio clínico", "Marque achados e veja hipóteses ranqueadas, o que falta confirmar e diferenciais."],
           ["#/reparo", "🩹", "Reparo tecidual", "Fases inflamatória, proliferativa e de remodelação; prazos por tecido e estimador de fase."],
@@ -115,6 +117,8 @@
           ["#/estudo", "🎓", "Estudo", "Flashcards com repetição espaçada, quiz e casos clínicos comentados."],
           ["#/artigos", "📰", "Artigos (PubMed)", "Busque no PubMed, avalie a qualidade, traduza (texto completo em acesso aberto) e extraia o que importa."],
           ["#/instagram", "📸", "Posts para Instagram", "Gere carrosséis e legendas a partir de artigos ou condições, prontos para baixar em PNG."],
+          ["#/novidades", "🔔", "Novidades científicas", "Acompanhe temas no PubMed e veja o que saiu de novo desde a última visita."],
+          ["#/conteudo", "🗓", "Planejamento de conteúdo", "Calendário editorial, banco de ideias e kit do artigo (carrossel + Reels + stories)."],
           ["#/reels", "🎬", "Reels com roteiro", "Roteiro natural para falar, vídeo animado 9:16 com legendas, teleprompter e exportação para pôr sua voz."]
         ].map(([h, i, t, d]) => `<a class="card modulo" href="${h}"><div class="ico">${i}</div><h3>${t}</h3><p class="muted">${d}</p></a>`).join("")}
       </div>
