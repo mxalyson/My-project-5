@@ -89,8 +89,8 @@
     const nMusc = Object.values(MUSCULOS).reduce((s, a) => s + a.length, 0);
     app.innerHTML = `
       ${(() => { const m = window.MARCA ? window.MARCA.get() : { nome: "FisioRaciocínio", sub: "", lema: "", rodape: "" }; return `<div class="hero">
-        <div class="row" style="gap:16px;flex-wrap:nowrap"><img src="icons/logo.svg" alt="" style="width:76px;height:76px;flex:none">
-        <div><h1 style="margin:0">${esc(m.nome)}</h1><div style="letter-spacing:.3em;font-size:.72rem;color:#e9dcbc;text-transform:uppercase">${esc(m.sub)}</div></div></div>
+        <div class="row" style="gap:22px;flex-wrap:wrap;align-items:center"><img src="icons/logo-dourada.png" alt="${esc(m.nome)} — ${esc(m.sub)}" style="width:170px;height:auto;flex:none">
+        <div style="flex:1;min-width:220px"><h1 style="margin:0">${esc(m.nome)}</h1><div style="letter-spacing:.3em;font-size:.72rem;color:#f1ead9;text-transform:uppercase">${esc(m.sub)}</div></div></div>
         <div class="ornamento"></div>
         <p class="lema">${esc(m.lema || "Cuidado, movimento e qualidade de vida")}</p>
         <p style="color:#d9cfb4;max-width:720px">Estudo e apoio ao raciocínio clínico — da avaliação à conduta, com diretrizes e artigos de alta qualidade, e criação de conteúdo para as redes.</p>

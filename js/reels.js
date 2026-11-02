@@ -169,7 +169,7 @@
 
   function quadro(ctx, t) {
     const T = TEMAS[st.tema] || TEMAS.marca; T_ATUAL = T;
-    if (!st.cenas.length) { fundo(ctx, T, t); return; }
+    if (!st.cenas.length) { fundo(ctx, T, t); if (T.marca) MK.logo(ctx, W / 2, H / 2 - 80, 560); return; }
     const { i, local, d } = cenaEm(t); const c = st.cenas[i];
     pausarVideos(c.midiaId);
     if (!fundoMidia(ctx, c, local, d, T)) fundo(ctx, T, t);
@@ -214,7 +214,7 @@
       const b = ajustar(ctx, txt || "Salva esse vídeo 💾", larg, areaAlt * .45, 110, 52, 800, 1.1); const h = b.l.length * b.s * b.lh;
       const y0 = topo + (areaAlt - h) / 2 - 120; bloco(ctx, b, W / 2 - 30, y0, corTit, corDest, "center", local / .7);
       ctx.globalAlpha = saida * ease((local - .6) / .4);
-      if (T.marca) { MK.monograma(ctx, W / 2 - 30, y0 + h + 120, 70); ctx.font = `500 44px ${T.fTit}`; ctx.fillStyle = ouro; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(MK.get().nome.toUpperCase(), W / 2 - 30, y0 + h + 215); ctx.font = `600 34px ${FONTE}`; ctx.fillStyle = T.sub; ctx.fillText(st.perfil || "", W / 2 - 30, y0 + h + 280); ctx.textAlign = "left"; }
+      if (T.marca) { const hl = MK.logo(ctx, W / 2 - 30, y0 + h + 240, 400); ctx.font = `600 36px ${FONTE}`; ctx.fillStyle = T.sub; ctx.textAlign = "center"; ctx.textBaseline = "top"; ctx.fillText(st.perfil || "", W / 2 - 30, y0 + h + 260 + hl / 2); ctx.textAlign = "left"; }
       else { ctx.font = `700 52px ${FONTE}`; ctx.fillStyle = T.acc; ctx.textAlign = "center"; ctx.fillText(st.perfil || "", W / 2 - 30, y0 + h + 70); ctx.textAlign = "left"; }
     } else if (c.tipo === "referencia") {
       if (T.marca) { ctx.fillStyle = ouro; ctx.font = `600 36px ${T.fTit}`; ctx.textBaseline = "top"; ctx.fillText("FONTE", x, topo + 30); ctx.fillRect(x, topo + 82, 160, 3); }
@@ -635,7 +635,7 @@ ${fonteTexto}` });
 
     editores(); atualizaDur();
     const fontes = ["800 40px Montserrat", "600 40px Cinzel", "800 40px Cinzel", "600 40px 'Cormorant Garamond'"];
-    Promise.all([carregarTudo(), document.fonts ? Promise.all(fontes.map(f => document.fonts.load(f))) : null].map(p => Promise.resolve(p).catch(() => {}))).then(() => { editores(); atualizaDur(); desenhar(); });
+    Promise.all([carregarTudo(), MK.pronto, document.fonts ? Promise.all(fontes.map(f => document.fonts.load(f))) : null].map(p => Promise.resolve(p).catch(() => {}))).then(() => { editores(); atualizaDur(); desenhar(); });
     desenhar();
   }
 

@@ -10,7 +10,7 @@
   // Tema de canvas "Marca": usado nos posts e Reels
   const TEMA = {
     nome: "Marca — verde e dourado", marca: true,
-    bg: "#0b3b2c", bg2: "#05231a", fg: "#f4ecd8", acc: "#d6b26a", sub: "#e7dcc0", card: "rgba(214,178,106,.10)",
+    bg: "#4a6c5e", bg2: "#3a5649", fg: "#f4ecd8", acc: "#d6b26a", sub: "#e7dcc0", card: "rgba(214,178,106,.10)",
     fTit: '"Cinzel", "Cormorant Garamond", Georgia, serif', fCorpo: '"Cormorant Garamond", Georgia, serif'
   };
   function ouro(ctx, x0, x1) {
@@ -21,7 +21,7 @@
   // Fundo com curvas douradas (sem fotos) — inspirado no material da marca
   function fundo(ctx, W, H, t = 0) {
     const g = ctx.createRadialGradient(W * .3, H * .25, 50, W * .5, H * .5, Math.max(W, H));
-    g.addColorStop(0, "#11523d"); g.addColorStop(.55, "#0b3b2c"); g.addColorStop(1, "#04201a");
+    g.addColorStop(0, "#557a6a"); g.addColorStop(.55, "#4a6c5e"); g.addColorStop(1, "#3a5649"); // verde da marca
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     const d = Math.sin(t * .35) * 18;
     ctx.save(); ctx.lineCap = "round";
@@ -35,22 +35,22 @@
     ctx.beginPath(); ctx.moveTo(-20, H * .93); ctx.quadraticCurveTo(W * .5, H * .80 - d, W + 20, H * .86); ctx.stroke();
     ctx.restore();
   }
-  // Monograma em círculo dourado
-  function monograma(ctx, cx, cy, r) {
-    const m = get();
-    ctx.save(); ctx.strokeStyle = ouro(ctx, cx - r, cx + r); ctx.lineWidth = Math.max(2, r * .06);
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = Math.max(1, r * .015); ctx.globalAlpha = .7; ctx.beginPath(); ctx.arc(cx, cy, r * .88, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
-    ctx.fillStyle = ouro(ctx, cx - r, cx + r); ctx.font = `600 ${r * .78}px ${TEMA.fTit}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText(m.mono, cx, cy + r * .05); ctx.restore();
-  }
+  // Logos oficiais (arquivos da marca)
+  const IMG = {};
+  [["mono", "icons/monograma.png"], ["dourada", "icons/logo-dourada.png"], ["verde", "icons/logo-verde.png"]].forEach(([k, src]) => { const i = new Image(); i.src = src; IMG[k] = i; });
+  const pronto = Promise.all(Object.values(IMG).map(i => i.decode().catch(() => {})));
+  const desenhaImg = (ctx, img, cx, cy, w) => { if (!img || !img.naturalWidth) return 0; const h = w * img.naturalHeight / img.naturalWidth; ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h); return h; };
+  // Monograma AT dourado (logo oficial)
+  function monograma(ctx, cx, cy, r) { desenhaImg(ctx, IMG.mono, cx, cy, r * 2); }
+  // Logo completa (monograma + nome em círculo), versão para fundo escuro
+  function logo(ctx, cx, cy, w) { return desenhaImg(ctx, IMG.dourada, cx, cy, w); }
   // Assinatura: monograma + nome + subtítulo
   function assinatura(ctx, x, y, escala = 1) {
     const m = get(); const r = 46 * escala;
     monograma(ctx, x + r, y + r, r);
     ctx.save(); ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
-    ctx.fillStyle = ouro(ctx, x + 2 * r, x + 2 * r + 600 * escala); ctx.font = `500 ${40 * escala}px ${TEMA.fTit}`;
-    ctx.fillText(m.nome.toUpperCase(), x + 2 * r + 24 * escala, y + r + 4 * escala);
+    ctx.fillStyle = "#f4ecd8"; ctx.font = `500 ${40 * escala}px ${TEMA.fTit}`;
+    espacado(ctx, m.nome.toUpperCase(), x + 2 * r + 24 * escala, y + r + 4 * escala, 3 * escala);
     ctx.fillStyle = "#e7dcc0"; ctx.font = `600 ${17 * escala}px "Montserrat", sans-serif`;
     espacado(ctx, m.sub.toUpperCase(), x + 2 * r + 26 * escala, y + r + 36 * escala, 4 * escala);
     ctx.restore();
@@ -69,7 +69,7 @@
   // ---------------------------------------------------------------- cabeçalho do app
   function aplicarCabecalho() {
     const m = get(); const b = $(".brand"); if (!b) return;
-    b.innerHTML = `<img src="icons/logo.svg" alt=""><span><span class="bn">${FR.esc(m.nome)}</span><span class="bs">${FR.esc(m.sub)}</span></span>`;
+    b.innerHTML = `<img src="icons/monograma.png" alt=""><span><span class="bn">${FR.esc(m.nome)}</span><span class="bs">${FR.esc(m.sub)}</span></span>`;
     document.title = `${m.nome} — Estudo e Raciocínio Clínico`;
   }
   aplicarCabecalho();
@@ -86,5 +86,5 @@
     window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
   }
 
-  window.MARCA = { get, set, PADRAO, TEMA, ouro, fundo, monograma, assinatura, espacado, rodape };
+  window.MARCA = { get, set, PADRAO, TEMA, ouro, fundo, monograma, logo, assinatura, espacado, rodape, IMG, pronto };
 })();

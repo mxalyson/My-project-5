@@ -1,11 +1,11 @@
 /* Service worker: o app abre offline. APIs externas (PubMed, Europe PMC, Claude) sempre usam a rede. */
-const VERSAO = "fisio-v5";
+const VERSAO = "fisio-v7";
 const ARQUIVOS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/style.css",
   "./js/app.js", "./js/marca.js", "./js/ia.js", "./js/artigos.js", "./js/instagram.js", "./js/reels.js",
   "./js/data/tecidos.js", "./js/data/achados.js", "./js/data/condicoes.js", "./js/data/testes.js",
   "./js/data/anatomia.js", "./js/data/evidencias.js", "./js/data/clinica.js",
-  "./icons/logo.svg", "./icons/icon-192.png", "./icons/icon-512.png"
+  "./icons/monograma.png", "./icons/logo-dourada.png", "./icons/logo-verde.png", "./icons/icon-192.png", "./icons/icon-512.png"
 ];
 const CACHE_EXTERNO = ["fonts.googleapis.com", "fonts.gstatic.com", "esm.sh"];
 
