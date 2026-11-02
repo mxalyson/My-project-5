@@ -3,7 +3,12 @@
 (function () {
   "use strict";
   const { $, store } = window.FR;
-  const PADRAO = { nome: "Alyson Tavares", sub: "Pilates & Fisioterapia", mono: "AT", perfil: "@alysontavares", rodape: "Avaliação • Tratamento • Acompanhamento", lema: "Seu bem-estar em boas mãos" };
+  const PADRAO = { nome: "Alyson Tavares", sub: "Pilates & Fisioterapia", mono: "AT", perfil: "@alysontavaresfisio", rodape: "Avaliação • Tratamento • Acompanhamento", lema: "Seu bem-estar em boas mãos" };
+  // Migração: troca @ antigos/genéricos já salvos neste aparelho pelo @ oficial
+  ["marca", "ig_estado", "reels_estado"].forEach(k => {
+    const v = store.get(k, null);
+    if (v && ["@alysontavares", "@seuperfil", ""].includes(v.perfil)) { v.perfil = PADRAO.perfil; store.set(k, v); }
+  });
   const get = () => Object.assign({}, PADRAO, store.get("marca", {}));
   const set = m => { store.set("marca", m); aplicarCabecalho(); };
 
