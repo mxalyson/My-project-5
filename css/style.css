@@ -137,3 +137,12 @@ details[open] > summary { margin-bottom: 6px; }
   .card { box-shadow: none; break-inside: avoid; }
   body { background: #fff; color: #000; }
 }
+
+/* Artigos e Instagram */
+.ig-prev { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+.ig-prev figure { margin: 0; }
+.ig-prev canvas { width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow); display: block; }
+.ig-prev figcaption { text-align: center; margin-top: 6px; }
+.sec-grid p { font-size: .92rem; }
+.trad { border-left: 3px solid var(--primary); padding-left: 12px; }
+code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; word-break: break-word; }

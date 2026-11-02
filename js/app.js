@@ -77,7 +77,7 @@
   function router() {
     const [r, ...args] = location.hash.replace(/^#\/?/, "").split("/");
     (rotas[r] || inicio)(...args.map(decodeURIComponent));
-    $$(".sidebar a").forEach(a => a.classList.toggle("ativo", a.dataset.r === (r === "condicao" ? "condicoes" : r)));
+    $$(".sidebar a").forEach(a => a.classList.toggle("ativo", a.dataset.r === ({ condicao: "condicoes", artigo: "artigos" }[r] || r)));
     $("#sidebar").classList.remove("aberto");
     window.scrollTo(0, 0);
   }
@@ -107,7 +107,9 @@
           ["#/ferramentas", "🧮", "Escalas e prescrição", "STarT Back, PROMs com MCID, Oxford, end-feel, 1RM e parâmetros de carga."],
           ["#/anatomia", "🦵", `Anatomia (${nMusc} músculos)`, "Origem, inserção, inervação, ação, ossos, nervos, dermátomos e artrocinemática."],
           ["#/evidencias", "🔬", "Evidências e guidelines", "O que fazer e o que não fazer, leitura crítica, PEDro, GRADE e busca de artigos."],
-          ["#/estudo", "🎓", "Estudo", "Flashcards com repetição espaçada, quiz e casos clínicos comentados."]
+          ["#/estudo", "🎓", "Estudo", "Flashcards com repetição espaçada, quiz e casos clínicos comentados."],
+          ["#/artigos", "📰", "Artigos (PubMed)", "Busque no PubMed, avalie a qualidade, traduza (texto completo em acesso aberto) e extraia o que importa."],
+          ["#/instagram", "📸", "Posts para Instagram", "Gere carrosséis e legendas a partir de artigos ou condições, prontos para baixar em PNG."]
         ].map(([h, i, t, d]) => `<a class="card modulo" href="${h}"><div class="ico">${i}</div><h3>${t}</h3><p class="muted">${d}</p></a>`).join("")}
       </div>
       ${avs.length ? `<h2>Avaliações recentes</h2><div class="card">${avs.slice(-5).reverse().map(a => `<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span><b>${esc(a.nome || "Sem nome")}</b> <small>· ${esc(regiaoNome(a.regiao) || "")} · ${new Date(a.criado).toLocaleDateString("pt-BR")}</small></span><a class="btn peq sec" href="#/avaliacao/${a.id}">Abrir</a></div>`).join("")}</div>` : ""}
@@ -875,6 +877,7 @@
       <div class="aviso">Síntese gerada automaticamente como apoio ao raciocínio. O diagnóstico e a conduta são de responsabilidade do fisioterapeuta.</div>`;
   }
 
-  // ---------------------------------------------------------------- start
-  router();
+  // ---------------------------------------------------------------- API para módulos extras
+  window.FR = { $, $$, esc, store, tabs, lista, fmt, app, rotas, regiaoNome, norm, shuffle };
+  document.addEventListener("DOMContentLoaded", router);
 })();

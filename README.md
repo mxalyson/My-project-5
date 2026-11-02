@@ -16,6 +16,9 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências): abra `index.htm
 | 🧮 **Escalas e prescrição** | Red/yellow flags, STarT Back interativo, PROMs com MCID, Oxford, end-feel, parâmetros de treino resistido, 1RM, regra de monitoramento da dor, critérios e LSI para retorno ao esporte. |
 | 🦵 **Anatomia aplicada** | 79 músculos (origem, inserção, inervação, ação/relevância clínica), ossos, nervos periféricos, dermátomos/miótomos/reflexos, artrocinemática e padrões capsulares. |
 | 🔬 **Evidências** | O que fazer / não fazer / incerto, guidelines por condição, 11 recomendações (Lin et al. 2020), níveis de evidência e GRADE, leitura crítica, calculadora PEDro, interpretação de IC × MCID e NNT, busca PICO no PubMed com filtros, glossário PT↔EN e fontes confiáveis. |
+| 📰 **Artigos (PubMed)** | Busca no PubMed (E-utilities) com filtros de desenho/data e conversão de pergunta clínica em busca; página do artigo com resumo, tradução, **texto completo** (artigos de acesso aberto via Europe PMC), **avaliação de qualidade** (triagem automática PEDro/AMSTAR-2 + avaliação crítica por IA com risco de viés e GRADE), **extração** (PICO, dose FITT, resultados com IC e relevância clínica, o que importa/não importa, glossário), notas e biblioteca exportável (.json/.md). |
+| 📸 **Posts para Instagram** | Carrosséis (feed 4:5, quadrado, story) gerados a partir de artigos, condições do sistema ou texto livre; 5 temas, edição de cada slide, exportação em PNG, legenda com contador de caracteres/hashtags. |
+| ⚙️ **IA (opcional)** | Tradução, avaliação, extração e textos de posts usam a API da Claude com a chave do próprio usuário (salva só no navegador). Sem chave, tudo funciona com recursos automáticos básicos. |
 | 🎓 **Estudo** | Flashcards com repetição espaçada (Leitner), quiz gerado automaticamente e casos clínicos comentados. |
 
 ## Estrutura
@@ -24,6 +27,9 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências): abra `index.htm
 index.html
 css/style.css
 js/app.js              # roteador, telas e motor de síntese
+js/ia.js               # Claude API (SDK oficial via esm.sh) + tela de configuração
+js/artigos.js          # PubMed, Europe PMC, avaliação, tradução, extração, biblioteca
+js/instagram.js        # gerador de carrosséis em canvas
 js/data/achados.js     # achados clínicos, regiões, red/yellow flags
 js/data/condicoes.js   # condições + motor de hipóteses
 js/data/testes.js      # testes especiais com acurácia
@@ -34,6 +40,10 @@ js/data/clinica.js     # escalas, prescrição, casos clínicos
 ```
 
 Para adicionar uma condição, inclua um objeto em `CONDICOES` usando chaves existentes de `ACHADOS` e `TESTES`.
+
+## Direitos autorais
+
+A tradução de **texto completo** é feita apenas para artigos em **acesso aberto** (licenças Creative Commons, via Europe PMC); para os demais, só o resumo. Os posts devem resumir com palavras próprias e citar a fonte — não reproduza figuras ou tabelas protegidas.
 
 ## Aviso
 
