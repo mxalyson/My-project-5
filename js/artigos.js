@@ -28,15 +28,35 @@
     ["hum", "Humanos", "humans[mh]"]
   ];
 
+  // ---------------------------------------------------------------- rede resiliente
+  // O PubMed (NCBI) às vezes fica fora do ar ou limita requisições (3/s); nesses casos a resposta pode vir
+  // sem cabeçalho CORS ("Failed to fetch"). Tentamos de novo e, se persistir, usamos o Europe PMC,
+  // que indexa os mesmos registros do PubMed (MEDLINE).
+  const esperar = ms => new Promise(r => setTimeout(r, ms));
+  async function obter(url, tipo = "json", tentativas = 3) {
+    let ultimo;
+    for (let i = 0; i < tentativas; i++) {
+      try {
+        const r = await fetch(url);
+        if (r.status === 429 || r.status >= 500) throw new Error("HTTP " + r.status);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const dado = tipo === "json" ? await r.json() : await r.text();
+        if (tipo === "json" && dado && dado.esearchresult && dado.esearchresult.ERROR) throw new Error("PubMed: " + dado.esearchresult.ERROR.slice(0, 80));
+        if (tipo === "json" && dado && dado.error) throw new Error("PubMed: " + String(dado.error).slice(0, 80));
+        return dado;
+      } catch (e) { ultimo = e; if (i < tentativas - 1) await esperar(700 * (i + 1)); }
+    }
+    throw ultimo;
+  }
+  const semTags = s => String(s || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
   async function esearch(term, retstart = 0, sort = "relevance") {
     const u = `${EUTILS}esearch.fcgi?db=pubmed&retmode=json&retmax=20&retstart=${retstart}&sort=${sort === "date" ? "pub_date" : "relevance"}&term=${encodeURIComponent(term)}${TOOL}`;
-    const r = await fetch(u); if (!r.ok) throw new Error("PubMed indisponível (" + r.status + ")");
-    const j = await r.json(); return { ids: j.esearchresult.idlist || [], total: +j.esearchresult.count || 0, traducao: j.esearchresult.querytranslation };
+    const j = await obter(u); return { ids: j.esearchresult.idlist || [], total: +j.esearchresult.count || 0, traducao: j.esearchresult.querytranslation };
   }
   async function esummary(ids) {
     if (!ids.length) return [];
-    const r = await fetch(`${EUTILS}esummary.fcgi?db=pubmed&retmode=json&id=${ids.join(",")}${TOOL}`);
-    const j = await r.json();
+    const j = await obter(`${EUTILS}esummary.fcgi?db=pubmed&retmode=json&id=${ids.join(",")}${TOOL}`);
     return ids.map(id => j.result[id]).filter(Boolean).map(d => ({
       pmid: d.uid, titulo: d.title, revista: d.fulljournalname || d.source, ano: (d.pubdate || "").slice(0, 4),
       autores: (d.authors || []).map(a => a.name), tipos: d.pubtype || [],
@@ -44,19 +64,68 @@
       doi: ((d.articleids || []).find(a => a.idtype === "doi") || {}).value || ""
     }));
   }
-  async function efetch(pmid) {
-    const r = await fetch(`${EUTILS}efetch.fcgi?db=pubmed&retmode=xml&id=${pmid}${TOOL}`);
-    if (!r.ok) throw new Error("Não foi possível carregar o artigo (" + r.status + ")");
-    const x = new DOMParser().parseFromString(await r.text(), "text/xml");
+  // ---- Europe PMC (reserva)
+  const EPMC_TIPOS = { sr: 'PUB_TYPE:"systematic review"', ma: 'PUB_TYPE:"meta-analysis"', rct: 'PUB_TYPE:"randomized controlled trial"', gl: '(PUB_TYPE:"guideline" OR PUB_TYPE:"practice guideline")' };
+  function consultaEpmc(q, filtros, desde) {
+    const ano = new Date().getFullYear();
+    const tipos = filtros.filter(f => EPMC_TIPOS[f]).map(f => EPMC_TIPOS[f]);
+    const partes = [`(${q})`, "SRC:MED"];
+    if (tipos.length) partes.push(`(${tipos.join(" OR ")})`);
+    if (filtros.includes("free")) partes.push("OPEN_ACCESS:y");
+    if (filtros.includes("y5")) partes.push(`FIRST_PDATE:[${ano - 5}-01-01 TO ${ano + 1}-12-31]`);
+    else if (filtros.includes("y10")) partes.push(`FIRST_PDATE:[${ano - 10}-01-01 TO ${ano + 1}-12-31]`);
+    if (desde) partes.push(`FIRST_IDATE:[${desde} TO ${ano + 1}-12-31]`);
+    return partes.join(" AND ");
+  }
+  const docEpmc = r => ({
+    pmid: r.pmid || "", titulo: semTags(r.title), revista: r.journalInfo?.journal?.title || r.journalTitle || r.journalInfo?.journal?.isoabbreviation || "",
+    ano: String(r.pubYear || ""), autores: (r.authorList?.author || []).map(a => a.fullName || [a.lastName, a.initials].filter(Boolean).join(" ")).filter(Boolean),
+    tipos: r.pubTypeList?.pubType || [], pmcid: r.pmcid || "", doi: r.doi || ""
+  });
+  async function epmcBusca(consulta, cursor = "*", sort = "relevance", tamanho = 20) {
+    const u = `${EPMC}search?format=json&resultType=core&pageSize=${tamanho}&cursorMark=${encodeURIComponent(cursor)}${sort === "date" ? "&sort=P_PDATE_D%20desc" : ""}&query=${encodeURIComponent(consulta)}`;
+    const j = await obter(u);
+    return { total: +j.hitCount || 0, docs: (j.resultList?.result || []).filter(r => r.pmid).map(docEpmc), proximo: j.nextCursorMark };
+  }
+  async function epmcArtigo(pmid) {
+    const j = await obter(`${EPMC}search?query=EXT_ID:${pmid}%20AND%20SRC:MED&format=json&resultType=core`);
+    const r = (j.resultList?.result || [])[0]; if (!r) throw new Error("Artigo não encontrado.");
+    const d = docEpmc(r);
+    // resumo estruturado vem como <h4>Rótulo</h4>texto
+    const html = String(r.abstractText || ""); const resumo = [];
+    if (/<h4>/i.test(html)) html.split(/<h4>/i).slice(1).forEach(parte => { const [rot, ...resto] = parte.split(/<\/h4>/i); resumo.push({ rotulo: semTags(rot), texto: semTags(resto.join(" ")) }); });
+    else if (html) resumo.push({ rotulo: "", texto: semTags(html) });
+    return { pmid, titulo: d.titulo, revista: d.revista, ano: d.ano, autores: d.autores, resumo, tipos: d.tipos,
+      mesh: (r.meshHeadingList?.meshHeading || []).map(m => m.descriptorName), palavras: r.keywordList?.keyword || [], doi: d.doi, pmcid: d.pmcid, fonte: "Europe PMC" };
+  }
+  async function efetchPubmed(pmid) {
+    const txt = await obter(`${EUTILS}efetch.fcgi?db=pubmed&retmode=xml&id=${pmid}${TOOL}`, "text");
+    const x = new DOMParser().parseFromString(txt, "text/xml");
     const t = sel => x.querySelector(sel)?.textContent?.trim() || "";
+    if (!t("ArticleTitle")) throw new Error("Resposta vazia do PubMed");
     const resumo = $$("Abstract AbstractText", x).map(a => ({ rotulo: a.getAttribute("Label") || "", texto: a.textContent.trim() }));
     const ids = {}; $$("PubmedData ArticleIdList ArticleId", x).forEach(a => { ids[a.getAttribute("IdType")] = a.textContent.trim(); });
     return {
       pmid, titulo: t("ArticleTitle"), revista: t("Journal Title"), ano: t("JournalIssue PubDate Year") || t("JournalIssue PubDate MedlineDate").slice(0, 4) || t("ArticleDate Year"),
       autores: $$("AuthorList Author", x).map(a => [a.querySelector("LastName")?.textContent, a.querySelector("Initials")?.textContent].filter(Boolean).join(" ") || a.querySelector("CollectiveName")?.textContent || "").filter(Boolean),
       resumo, tipos: $$("PublicationType", x).map(p => p.textContent.trim()), mesh: $$("MeshHeading DescriptorName", x).map(m => m.textContent.trim()),
-      palavras: $$("KeywordList Keyword", x).map(k => k.textContent.trim()), doi: ids.doi || "", pmcid: ids.pmc || ""
+      palavras: $$("KeywordList Keyword", x).map(k => k.textContent.trim()), doi: ids.doi || "", pmcid: ids.pmc || "", fonte: "PubMed"
     };
+  }
+  async function efetch(pmid) {
+    try { return await efetchPubmed(pmid); }
+    catch (e) { return await epmcArtigo(pmid); } // PubMed fora do ar → Europe PMC
+  }
+  // Busca unificada: PubMed primeiro; se falhar, Europe PMC
+  async function pesquisar({ q, termoPubmed, filtros, sort, inicio = 0, cursor = "*" }) {
+    try {
+      const r = await esearch(termoPubmed, inicio, sort); const docs = await esummary(r.ids);
+      return { fonte: "PubMed", total: r.total, docs, traducao: r.traducao };
+    } catch (e) {
+      const consulta = consultaEpmc(q, filtros);
+      const r = await epmcBusca(consulta, cursor, sort);
+      return { fonte: "Europe PMC", total: r.total, docs: r.docs, traducao: consulta, proximo: r.proximo, erroPubmed: e.message };
+    }
   }
   async function epmcInfo(pmid) {
     try {
@@ -203,23 +272,35 @@
       const fs = FILTROS.filter(x => f.includes(x[0])); const tipos = fs.filter(x => ["sr", "ma", "rct", "gl"].includes(x[0])).map(x => x[2]); const outros = fs.filter(x => !["sr", "ma", "rct", "gl"].includes(x[0])).map(x => x[2]);
       return [q && `(${q})`, tipos.length && `(${tipos.join(" OR ")})`, ...outros].filter(Boolean).join(" AND ");
     };
-    const buscar = async (inicio = 0) => {
-      const t = termo(); if (!$("#pmQ").value.trim()) { $("#pmRes").innerHTML = `<p class="muted">Digite os termos de busca.</p>`; return; }
-      $("#pmRes").innerHTML = `<div class="info">Buscando no PubMed…</div>`;
+    let cursores = ["*"]; // paginação do Europe PMC (por cursor)
+    const pareceIngles = q => !/[ãõçáéíóúâêô]|\b(dor|de|do|da|em|com|para|tratamento|exercicio|exercício|joelho|ombro|coluna|lombar|quadril|tornozelo)\b/i.test(q);
+    const buscar = async (inicio = 0, pagina = 0) => {
+      const t = termo(); const q = $("#pmQ").value.trim(); if (!q) { $("#pmRes").innerHTML = `<p class="muted">Digite os termos de busca.</p>`; return; }
+      const filtros = $$("[data-pf]", el).filter(x => x.checked).map(x => x.dataset.pf);
+      if (pagina === 0) cursores = ["*"];
+      $("#pmRes").innerHTML = `<div class="info">Buscando…</div>`;
       try {
-        const r = await esearch(t, inicio, $("#pmSort").value); const docs = await esummary(r.ids);
+        const r = await pesquisar({ q, termoPubmed: t, filtros, sort: $("#pmSort").value, inicio, cursor: cursores[pagina] || "*" });
+        if (r.proximo) cursores[pagina + 1] = r.proximo;
+        const ini = r.fonte === "PubMed" ? inicio : pagina * 20;
         const salvos = bib();
-        $("#pmRes").innerHTML = `<p class="muted">${r.total.toLocaleString("pt-BR")} resultados · mostrando ${inicio + 1}–${inicio + docs.length}</p>
-          ${docs.map(d => `<div class="card"><div class="row" style="justify-content:space-between"><span>${badgeDesenho(d.tipos, d.titulo)}${d.pmcid ? `<span class="tag ok">PMC (texto disponível)</span>` : ""}${salvos[d.pmid] ? `<span class="tag">★ na biblioteca</span>` : ""}</span><small class="muted">PMID ${d.pmid}</small></div>
+        const temMais = ini + 20 < r.total;
+        $("#pmRes").innerHTML = `${r.fonte !== "PubMed" ? `<div class="aviso">O PubMed está instável ou fora do ar neste momento, então os resultados vêm do <b>Europe PMC</b>, que reúne os mesmos artigos do PubMed (MEDLINE).</div>` : ""}
+          <p class="muted">${r.total.toLocaleString("pt-BR")} resultados${r.docs.length ? ` · mostrando ${ini + 1}–${ini + r.docs.length}` : ""} · fonte: ${r.fonte}</p>
+          ${!r.total ? `<div class="aviso">Nenhum artigo encontrado.${pareceIngles(q) ? " Tente desmarcar alguns filtros (ex.: tipo de estudo ou período)." : " As bases de artigos funcionam em <b>inglês</b>: tente, por exemplo, <i>low back pain pilates</i> em vez de <i>dor lombar pilates</i>, ou use a ajuda abaixo da busca."}</div>` : ""}
+          ${r.docs.map(d => `<div class="card"><div class="row" style="justify-content:space-between"><span>${badgeDesenho(d.tipos, d.titulo)}${d.pmcid ? `<span class="tag ok">PMC (texto disponível)</span>` : ""}${salvos[d.pmid] ? `<span class="tag">★ na biblioteca</span>` : ""}</span><small class="muted">PMID ${d.pmid}</small></div>
             <h3 style="margin:.4rem 0"><a href="#/artigo/${d.pmid}">${esc(d.titulo)}</a></h3>
             <small class="muted">${esc(d.autores.slice(0, 3).join(", "))}${d.autores.length > 3 ? " et al." : ""} · <i>${esc(d.revista)}</i> · ${esc(d.ano)}</small></div>`).join("")}
-          <div class="row">${inicio > 0 ? `<button class="btn sec" data-pag="${inicio - 20}">← Anteriores</button>` : ""}${inicio + 20 < r.total ? `<button class="btn sec" data-pag="${inicio + 20}">Próximos →</button>` : ""}</div>
-          <details><summary>Consulta enviada ao PubMed</summary><code style="font-size:.8rem">${esc(r.traducao || t)}</code></details>`;
-      } catch (e) { $("#pmRes").innerHTML = `<div class="alerta">${esc(e.message)}</div>`; }
+          <div class="row">${ini > 0 ? `<button class="btn sec" data-pag="${inicio - 20}" data-pg="${pagina - 1}">← Anteriores</button>` : ""}${temMais ? `<button class="btn sec" data-pag="${inicio + 20}" data-pg="${pagina + 1}">Próximos →</button>` : ""}</div>
+          <details><summary>Consulta enviada</summary><code style="font-size:.8rem">${esc(r.traducao || t)}</code></details>`;
+      } catch (e) {
+        $("#pmRes").innerHTML = `<div class="alerta"><b>Não foi possível buscar agora.</b> O PubMed e o Europe PMC não responderam (${esc(e.message)}). Verifique a internet e tente de novo em alguns minutos.</div><button class="btn sec" id="pmTentar">Tentar de novo</button>`;
+        $("#pmTentar").addEventListener("click", () => buscar(inicio, pagina));
+      }
     };
     $("#pmBuscar").addEventListener("click", () => buscar(0));
     $("#pmQ").addEventListener("keydown", e => { if (e.key === "Enter") buscar(0); });
-    $("#pmRes").addEventListener("click", e => { const b = e.target.closest("[data-pag]"); if (b) { buscar(+b.dataset.pag); window.scrollTo(0, 0); } });
+    $("#pmRes").addEventListener("click", e => { const b = e.target.closest("[data-pag]"); if (b) { buscar(+b.dataset.pag, +b.dataset.pg); window.scrollTo(0, 0); } });
     $("#pmTraduzQ").addEventListener("click", async () => {
       const p = $("#pmPergunta").value.trim(); if (!p) return;
       if (!window.IA.temIA()) {
@@ -437,5 +518,5 @@
 
   rotas.artigos = viewArtigos;
   rotas.artigo = viewArtigo;
-  window.ARTIGOS = { efetch, epmcInfo, classificar, extracaoSimples, cacheGet, bib, textoParaIA, esearch, esummary, FILTROS, badgeDesenho };
+  window.ARTIGOS = { efetch, epmcInfo, classificar, extracaoSimples, cacheGet, bib, textoParaIA, esearch, esummary, FILTROS, badgeDesenho, obter, consultaEpmc, epmcBusca };
 })();

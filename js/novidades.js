@@ -26,10 +26,17 @@
   // Busca artigos adicionados ao PubMed desde a última visita (data de entrada no Entrez)
   async function novos(t, comDetalhes) {
     const desde = t.visto || new Date(Date.now() - 30 * 864e5).toISOString();
-    const u = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=20&sort=pub_date&datetype=edat&mindate=${ymd(desde)}&maxdate=3000&term=${encodeURIComponent(termo(t))}&tool=fisioraciocinio`;
-    const r = await fetch(u); if (!r.ok) throw new Error("PubMed indisponível");
-    const j = await r.json(); const ids = j.esearchresult.idlist || []; const total = +j.esearchresult.count || 0;
-    return { total, docs: comDetalhes ? await window.ARTIGOS.esummary(ids) : [] };
+    const A = window.ARTIGOS;
+    try {
+      const u = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=20&sort=pub_date&datetype=edat&mindate=${ymd(desde)}&maxdate=3000&term=${encodeURIComponent(termo(t))}&tool=fisioraciocinio`;
+      const j = await A.obter(u); const ids = j.esearchresult.idlist || []; const total = +j.esearchresult.count || 0;
+      return { total, docs: comDetalhes ? await A.esummary(ids) : [], fonte: "PubMed" };
+    } catch (e) {
+      // PubMed fora do ar → Europe PMC (data de entrada na base = FIRST_IDATE)
+      const consulta = A.consultaEpmc(t.query.replace(/\[(tiab|mh|pt)\]/gi, ""), t.tipos || TIPOS_PADRAO, ymd(desde).replace(/\//g, "-"));
+      const r = await A.epmcBusca(consulta, "*", "date", comDetalhes ? 20 : 1);
+      return { total: r.total, docs: comDetalhes ? r.docs : [], fonte: "Europe PMC" };
+    }
   }
   async function verificarTodos(comDetalhes) {
     const out = {};
@@ -63,7 +70,7 @@
         const r = ultimo[t.id], box = $(`[data-t="${t.id}"] .nvRes`); if (!box) return;
         if (r.erro) { box.innerHTML = `<span class="tag bad">${esc(r.erro)}</span>`; return; }
         box.classList.remove("muted");
-        box.innerHTML = r.total ? `<p><span class="tag ok">${r.total} novo(s)</span>${r.total > 20 ? " (mostrando 20 mais recentes)" : ""}</p>` + r.docs.map(d => `<div style="padding:4px 0;border-bottom:1px solid var(--border)">${window.ARTIGOS.badgeDesenho(d.tipos, d.titulo)} <a href="#/artigo/${d.pmid}">${esc(d.titulo)}</a> <small class="muted">· ${esc(d.revista)} · ${esc(d.ano)}</small></div>`).join("") : `<span class="muted">Nada novo desde a última visita.</span>`;
+        box.innerHTML = r.total ? `<p><span class="tag ok">${r.total} novo(s)</span>${r.total > 20 ? " (mostrando 20 mais recentes)" : ""}${r.fonte !== "PubMed" ? ` <span class="tag warn">via Europe PMC (PubMed instável)</span>` : ""}</p>` + r.docs.map(d => `<div style="padding:4px 0;border-bottom:1px solid var(--border)">${window.ARTIGOS.badgeDesenho(d.tipos, d.titulo)} <a href="#/artigo/${d.pmid}">${esc(d.titulo)}</a> <small class="muted">· ${esc(d.revista)} · ${esc(d.ano)}</small></div>`).join("") : `<span class="muted">Nada novo desde a última visita.</span>`;
       });
     };
     $("#nvVerificar").addEventListener("click", verificar);
