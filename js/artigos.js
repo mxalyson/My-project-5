@@ -33,14 +33,26 @@
   // sem cabeçalho CORS ("Failed to fetch"). Tentamos de novo e, se persistir, usamos o Europe PMC,
   // que indexa os mesmos registros do PubMed (MEDLINE).
   const esperar = ms => new Promise(r => setTimeout(r, ms));
+  // fetch com tempo-limite: servidores lentos/pendurados não travam a tela
+  async function buscarUrl(url, ms = 15000, comoTexto = false) {
+    const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+    try {
+      const r = await fetch(url, { signal: c.signal });
+      if (!comoTexto) return r;
+      // lê o corpo ainda sob o mesmo tempo-limite (alguns servidores travam no meio do envio)
+      return { ok: r.ok, status: r.status, texto: await r.text() };
+    }
+    catch (e) { throw new Error(e.name === "AbortError" ? "o servidor demorou demais para responder" : e.message); }
+    finally { clearTimeout(t); }
+  }
   async function obter(url, tipo = "json", tentativas = 3) {
     let ultimo;
     for (let i = 0; i < tentativas; i++) {
       try {
-        const r = await fetch(url);
+        const r = await buscarUrl(url, 15000, true);
         if (r.status === 429 || r.status >= 500) throw new Error("HTTP " + r.status);
         if (!r.ok) throw new Error("HTTP " + r.status);
-        const dado = tipo === "json" ? await r.json() : await r.text();
+        const dado = tipo === "json" ? JSON.parse(r.texto) : r.texto;
         if (tipo === "json" && dado && dado.esearchresult && dado.esearchresult.ERROR) throw new Error("PubMed: " + dado.esearchresult.ERROR.slice(0, 80));
         if (tipo === "json" && dado && dado.error) throw new Error("PubMed: " + String(dado.error).slice(0, 80));
         return dado;
@@ -129,15 +141,19 @@
   }
   async function epmcInfo(pmid) {
     try {
-      const r = await fetch(`${EPMC}search?query=EXT_ID:${pmid}%20AND%20SRC:MED&format=json&resultType=core`);
-      const d = (await r.json()).resultList.result[0] || {};
-      return { aberto: d.isOpenAccess === "Y", pmcid: d.pmcid || "", licenca: d.license || "", citacoes: d.citedByCount || 0 };
-    } catch (e) { return { aberto: false }; }
+      const j = await obter(`${EPMC}search?query=EXT_ID:${pmid}%20AND%20SRC:MED&format=json&resultType=core`);
+      const d = (j.resultList?.result || [])[0] || {};
+      // versões gratuitas conhecidas (PMC, editora, repositórios via Unpaywall)
+      const links = (d.fullTextUrlList?.fullTextUrl || []).filter(u => /open access|free/i.test(u.availability || ""))
+        .map(u => ({ url: u.url, pdf: u.documentStyle === "pdf", site: u.site === "Europe_PMC" ? "Europe PMC" : u.site === "Unpaywall" ? "repositório/editora" : u.site === "DOI" ? "editora" : (u.site || "fonte"), aberto: /open access/i.test(u.availability) }));
+      if (d.pmcid && !links.some(l => /pmc/i.test(l.url))) links.push({ url: `https://pmc.ncbi.nlm.nih.gov/articles/${d.pmcid}/`, pdf: false, site: "PubMed Central" });
+      return { aberto: d.isOpenAccess === "Y", gratis: !!(d.pmcid || links.length), pmcid: d.pmcid || "", licenca: d.license || "", citacoes: d.citedByCount || 0, links };
+    } catch (e) { return { aberto: false, gratis: false, links: [] }; }
   }
   async function textoCompleto(pmcid) {
-    const r = await fetch(`${EPMC}${pmcid}/fullTextXML`);
+    const r = await buscarUrl(`${EPMC}${pmcid}/fullTextXML`, 10000, true);
     if (!r.ok) throw new Error("Texto completo não disponível no Europe PMC.");
-    const x = new DOMParser().parseFromString(await r.text(), "text/xml");
+    const x = new DOMParser().parseFromString(r.texto, "text/xml");
     const body = x.querySelector("body"); if (!body) throw new Error("Texto completo sem corpo estruturado.");
     const secoes = [];
     const visitar = (el, prefixo) => {
@@ -355,12 +371,13 @@
     const desenho = classificar(art.tipos, art.titulo + " " + art.resumo.map(r => r.texto).join(" "));
     const naBib = () => !!bib()[pmid];
     app.innerHTML = `<p><a href="#/artigos">← Artigos</a></p>
-      <div class="row"><span class="tag ${desenho.cor}">${esc(desenho.nome)}</span><span class="tag">Nível: ${esc(desenho.nivel)}</span>${oa.aberto ? `<span class="tag ok">Acesso aberto ${oa.licenca ? "· " + esc(oa.licenca.toUpperCase()) : ""}</span>` : `<span class="tag">Sem acesso aberto ao texto completo</span>`}${oa.citacoes ? `<span class="tag">Citado ${oa.citacoes}×</span>` : ""}</div>
+      <div class="row"><span class="tag ${desenho.cor}">${esc(desenho.nome)}</span><span class="tag">Nível: ${esc(desenho.nivel)}</span>${oa.aberto ? `<span class="tag ok">Acesso aberto ${oa.licenca ? "· " + esc(oa.licenca.toUpperCase()) : ""}</span>` : oa.gratis ? `<span class="tag ok">Texto completo gratuito</span>` : `<span class="tag">Sem versão gratuita encontrada</span>`}${oa.citacoes ? `<span class="tag">Citado ${oa.citacoes}×</span>` : ""}</div>
       <h1 style="margin-top:8px">${esc(art.titulo)}</h1>
       <p class="muted">${esc(art.autores.slice(0, 6).join(", "))}${art.autores.length > 6 ? " et al." : ""} · <i>${esc(art.revista)}</i> · ${esc(art.ano)} · PMID ${pmid}</p>
       <div class="row no-print"><button class="btn" id="artSalvar">${naBib() ? "★ Na biblioteca" : "☆ Salvar na biblioteca"}</button>
         <a class="btn sec" target="_blank" rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/">PubMed ↗</a>
         ${art.doi ? `<a class="btn sec" target="_blank" rel="noopener" href="https://doi.org/${esc(art.doi)}">DOI ↗</a>` : ""}
+        ${oa.links.filter(l => l.pdf).slice(0, 1).map(l => `<a class="btn" target="_blank" rel="noopener" href="${esc(l.url)}">📄 PDF gratuito ↗</a>`).join("")}
         ${art.pmcid ? `<a class="btn sec" target="_blank" rel="noopener" href="https://pmc.ncbi.nlm.nih.gov/articles/${esc(art.pmcid)}/">PMC ↗</a>` : ""}
         <a class="btn sec" href="#/instagram/${pmid}">📸 Criar post</a><a class="btn sec" href="#/reels/${pmid}">🎬 Criar Reels</a></div>
       ${tabs("tabArtigo", [["resumo", "Resumo + tradução"], ["completo", "Texto completo"], ["avaliar", "Avaliar qualidade"], ["extrair", "Extrair o que importa"], ["notas", "Notas"]], "resumo", (k, el) => {
@@ -376,51 +393,155 @@
 
   const iaAviso = () => window.IA.temIA() ? "" : `<div class="aviso">A IA não está configurada — usando recursos automáticos básicos. <a href="#/ia">Configurar IA</a> para tradução completa e análise aprofundada.</div>`;
 
+  // ---------------------------------------------------------------- tradução: IA (se configurada) → tradutor do Chrome (grátis, no aparelho) → Google
+  let tradutorChrome = null, chromeOk = null;
+  async function chromeDisponivel() {
+    if (chromeOk !== null) return chromeOk;
+    try {
+      if (!("Translator" in self)) return (chromeOk = false);
+      // em alguns navegadores a consulta nunca responde: desiste em 2 s
+      const a = await Promise.race([self.Translator.availability({ sourceLanguage: "en", targetLanguage: "pt" }), new Promise(r => setTimeout(() => r("timeout"), 2000))]);
+      return (chromeOk = a !== "unavailable" && a !== "timeout");
+    } catch (e) { return (chromeOk = false); }
+  }
+  async function motorTraducao() { if (window.IA.temIA()) return "ia"; if (await chromeDisponivel()) return "chrome"; return null; }
+  const NOME_MOTOR = { ia: "IA (Claude)", chrome: "tradutor do Chrome (gratuito, no aparelho)" };
+  async function traduzirTexto(texto, { titulo = "", onText, onProgresso } = {}) {
+    const m = await motorTraducao();
+    if (m === "ia") {
+      let acc = "";
+      return await window.IA.chamar({ maxTokens: 32000, prompt: `Traduza integralmente para o português do Brasil o trecho${titulo ? ` "${titulo}"` : ""} de um artigo científico. Preserve todos os números, estatísticas, referências entre colchetes e termos técnicos de fisioterapia. Não resuma, não omita frases e não acrescente comentários. Responda apenas com a tradução, mantendo a divisão em parágrafos com linha em branco.\n\n<artigo>\n${texto}\n</artigo>`, onText: s => { acc += s; onText && onText(acc); } });
+    }
+    if (m === "chrome") {
+      if (!tradutorChrome) tradutorChrome = await self.Translator.create({ sourceLanguage: "en", targetLanguage: "pt", monitor(mon) { mon.addEventListener("downloadprogress", e => onProgresso && onProgresso(`Baixando o tradutor do Chrome… ${Math.round(e.loaded * 100)}%`)); } });
+      const pars = texto.split(/\n\n+/); const out = [];
+      for (const p of pars) { out.push(p.trim() ? await tradutorChrome.translate(p) : ""); onText && onText(out.join("\n\n")); }
+      return out.join("\n\n");
+    }
+    throw new Error("SEM_TRADUTOR");
+  }
+  // Link do Google Tradutor em pedaços de até ~4.500 caracteres
+  function linksGoogle(texto) {
+    const pedacos = []; let atual = "";
+    texto.split(/\n\n+/).forEach(p => { if ((atual + "\n\n" + p).length > 4500 && atual) { pedacos.push(atual); atual = p; } else atual = atual ? atual + "\n\n" + p : p; });
+    if (atual) pedacos.push(atual);
+    return pedacos.map((t, i) => `<a class="btn sec peq" target="_blank" rel="noopener" href="https://translate.google.com/?sl=en&tl=pt&op=translate&text=${encodeURIComponent(t)}">Google Tradutor${pedacos.length > 1 ? ` (parte ${i + 1}/${pedacos.length})` : ""} ↗</a>`).join(" ");
+  }
+  const avisoSemTradutor = `<div class="aviso"><b>Como traduzir aqui dentro:</b> use o <b>Google Chrome</b> no computador (tem um tradutor gratuito embutido que o sistema usa automaticamente) ou configure a IA em <a href="#/ia">⚙️ Configurações</a>. Enquanto isso, use os botões do Google Tradutor de cada seção.</div>`;
+
+  // ---------------------------------------------------------------- leitor de PDF (pdf.js)
+  const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+  let pdfjsP = null;
+  function carregarPdfjs() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return pdfjsP || (pdfjsP = new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = PDFJS + "pdf.min.js"; sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; res(window.pdfjsLib); }; sc.onerror = () => rej(new Error("Não foi possível carregar o leitor de PDF (verifique a internet).")); document.head.appendChild(sc); }));
+  }
+  const TITULOS_SECAO = /^(abstract|background|introduction|methods?|materials and methods|patients and methods|study design|participants|interventions?|outcomes?|statistical analysis|results|discussion|limitations|strengths and limitations|conclusions?|clinical implications|practical implications|references|acknowledg(e)?ments?|funding|conflicts? of interest|declaration|resumo|introdução|métodos|resultados|discussão|conclusões?|referências)\b[:.]?$/i;
+  async function lerPdf(arquivo, progresso) {
+    const lib = await carregarPdfjs();
+    const pdf = await lib.getDocument({ data: await arquivo.arrayBuffer() }).promise;
+    const linhas = [];
+    for (let n = 1; n <= pdf.numPages; n++) {
+      progresso && progresso(`Lendo página ${n} de ${pdf.numPages}…`);
+      const pg = await pdf.getPage(n); const c = await pg.getTextContent();
+      let y = null, linha = "", ultY = null;
+      c.items.forEach(it => {
+        const yy = Math.round(it.transform[5]);
+        if (y !== null && Math.abs(yy - y) > 2) { linhas.push({ t: linha.trim(), gap: ultY !== null ? Math.abs(ultY - y) : 0 }); ultY = y; linha = ""; }
+        y = yy; linha += it.str + (it.hasEOL ? " " : "");
+      });
+      if (linha.trim()) linhas.push({ t: linha.trim(), gap: 0 });
+    }
+    // monta parágrafos (une hifenização) e detecta títulos de seção
+    const secoes = []; let atual = { titulo: "Início", pars: [""] };
+    linhas.forEach(l => {
+      const t = l.t; if (!t) return;
+      if (t.length < 45 && TITULOS_SECAO.test(t.replace(/^\d+(\.\d+)*\.?\s*/, ""))) { if (atual.pars.join("").trim()) secoes.push(atual); atual = { titulo: t, pars: [""] }; return; }
+      const ult = atual.pars.length - 1;
+      if (l.gap > 16 && atual.pars[ult].length > 200) atual.pars.push("");
+      const k = atual.pars.length - 1;
+      atual.pars[k] = atual.pars[k].endsWith("-") ? atual.pars[k].slice(0, -1) + t : (atual.pars[k] ? atual.pars[k] + " " + t : t);
+    });
+    if (atual.pars.join("").trim()) secoes.push(atual);
+    // remove referências e partes administrativas
+    const corte = secoes.findIndex(s => /^(\d+\.?\s*)?(references|referências)/i.test(s.titulo));
+    const uteis = (corte > 0 ? secoes.slice(0, corte) : secoes).map(s => ({ titulo: s.titulo, texto: s.pars.map(p => p.trim()).filter(p => p.length > 1).join("\n\n") })).filter(s => s.texto.length > 40);
+    // seções muito longas são divididas para facilitar a leitura/tradução
+    const out = []; uteis.forEach(s => { if (s.texto.length <= 9000) out.push(s); else { const ps = s.texto.split("\n\n"); let buf = "", parte = 1; ps.forEach(p => { if ((buf + p).length > 8000 && buf) { out.push({ titulo: `${s.titulo} (parte ${parte++})`, texto: buf.trim() }); buf = ""; } buf += p + "\n\n"; }); if (buf.trim()) out.push({ titulo: `${s.titulo}${parte > 1 ? ` (parte ${parte})` : ""}`, texto: buf.trim() }); } });
+    if (!out.length) throw new Error("Não consegui extrair texto deste PDF (pode ser uma imagem escaneada).");
+    return out;
+  }
+
   function tabResumo(el, art) {
     const tr = cacheGet(art.pmid, "trResumo");
     const original = art.resumo.length ? art.resumo.map(r => `<p>${r.rotulo ? `<b>${esc(r.rotulo)}:</b> ` : ""}${esc(r.texto)}</p>`).join("") : `<p class="muted">Este registro não tem resumo no PubMed.</p>`;
     const textoResumo = art.resumo.map(r => (r.rotulo ? r.rotulo + ": " : "") + r.texto).join("\n\n");
-    el.innerHTML = `${iaAviso()}<div class="grid-2"><div class="card"><h3>Original (inglês)</h3>${original}
+    el.innerHTML = `<div class="grid-2"><div class="card"><h3>Original (inglês)</h3>${original}
         ${art.mesh.length ? `<p><small class="muted">MeSH: ${esc(art.mesh.slice(0, 12).join("; "))}</small></p>` : ""}</div>
       <div class="card"><h3>Tradução (português)</h3><div id="trBox">${tr ? tr.split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("") : `<p class="muted">Ainda não traduzido.</p>`}</div>
-        <div class="row no-print">${window.IA.temIA() ? `<button class="btn" id="trIA">${tr ? "Traduzir novamente" : "Traduzir com IA"}</button>` : ""}
-        ${textoResumo ? `<a class="btn sec" target="_blank" rel="noopener" href="https://translate.google.com/?sl=en&tl=pt&op=translate&text=${encodeURIComponent(textoResumo.slice(0, 4800))}">Google Tradutor ↗</a>` : ""}</div></div></div>`;
+        <div class="row no-print"><button class="btn" id="trIA">${tr ? "Traduzir novamente" : "Traduzir"}</button>
+        ${textoResumo ? linksGoogle(textoResumo) : ""}</div><div id="trMotor" class="muted" style="font-size:.8rem"></div></div></div>`;
+    motorTraducao().then(m => { const d = $("#trMotor", el); if (d) d.textContent = m ? `Tradução por: ${NOME_MOTOR[m]}` : ""; if (!m && $("#trIA", el)) $("#trIA", el).hidden = true; if (!m) el.insertAdjacentHTML("afterbegin", avisoSemTradutor); });
     $("#trIA", el)?.addEventListener("click", async () => {
-      const box = $("#trBox", el); box.innerHTML = ""; let acc = "";
+      const box = $("#trBox", el); box.innerHTML = `<p class="muted">Traduzindo…</p>`;
       try {
-        const t = await window.IA.chamar({ prompt: `Traduza integralmente para o português do Brasil o resumo científico abaixo. Mantenha os rótulos das seções traduzidos, todos os números, unidades, siglas estatísticas (IC 95%, DMP, SMD, RR) e termos técnicos corretos em fisioterapia. Não resuma nem comente. Responda apenas com a tradução, separando seções por linha em branco.\n\n<artigo>\n${textoResumo}\n</artigo>`, onText: s => { acc += s; box.textContent = acc; } });
+        const t = await traduzirTexto(textoResumo, { titulo: "Resumo", onText: s => { box.textContent = s; }, onProgresso: s => { box.textContent = s; } });
         cacheSet(art.pmid, "trResumo", t); box.innerHTML = t.split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("");
-      } catch (e) { box.innerHTML = `<div class="alerta">${esc(e.message)}</div>`; }
+      } catch (e) { box.innerHTML = e.message === "SEM_TRADUTOR" ? avisoSemTradutor : `<div class="alerta">${esc(e.message)}</div>`; }
     });
   }
 
   async function tabCompleto(el, art, oa) {
-    if (!oa.aberto || !art.pmcid) {
-      el.innerHTML = `<div class="aviso"><b>Texto completo indisponível para tradução.</b> Este artigo não está em acesso aberto no Europe PMC. Por respeito aos direitos autorais, a tradução completa é feita apenas em artigos de acesso aberto (licenças Creative Commons). Você ainda pode traduzir o resumo, avaliar e extrair a partir dele, ou acessar o artigo pela editora/biblioteca da sua instituição.</div>
-        <div class="row">${art.doi ? `<a class="btn sec" target="_blank" rel="noopener" href="https://doi.org/${esc(art.doi)}">Página da editora ↗</a>` : ""}<a class="btn sec" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=${encodeURIComponent(art.titulo)}">Procurar versão gratuita (Google Scholar) ↗</a></div>`;
-      return;
+    let secoes = cacheGet(art.pmid, "full"), origem = cacheGet(art.pmid, "fullOrigem") || "Europe PMC";
+    if (!secoes && art.pmcid) {
+      el.innerHTML = `<div class="info">Carregando texto completo…</div>`;
+      try { secoes = await textoCompleto(art.pmcid); origem = "Europe PMC"; cacheSet(art.pmid, "full", secoes); cacheSet(art.pmid, "fullOrigem", origem); } catch (e) { secoes = null; }
     }
-    el.innerHTML = `<div class="info">Carregando texto completo do Europe PMC…</div>`;
-    let secoes;
-    try { secoes = cacheGet(art.pmid, "full") || await textoCompleto(art.pmcid); cacheSet(art.pmid, "full", secoes); }
-    catch (e) { el.innerHTML = `<div class="alerta">${esc(e.message)}</div>`; return; }
+    if (!secoes) { telaPdf(el, art, oa); return; }
+    mostrarSecoes(el, art, oa, secoes, origem);
+  }
+  // Quando o texto não pode ser baixado automaticamente: o usuário abre a versão gratuita e envia o PDF
+  function telaPdf(el, art, oa) {
+    const pdfs = oa.links.filter(l => l.pdf), outros = oa.links.filter(l => !l.pdf);
+    el.innerHTML = `<div class="card"><h3>Carregar o texto completo</h3>
+      ${oa.gratis ? `<p>Este artigo tem <b>versão gratuita</b>, mas o site de origem não permite que o sistema baixe o texto sozinho. São dois passos:</p>
+        <ol><li><b>Baixe o PDF gratuito</b> pelo botão abaixo (abre em outra aba; no site, use o botão de download/PDF).</li><li><b>Envie o PDF aqui</b> — o sistema lê o texto, separa as seções e você traduz.</li></ol>
+        <div class="row">${pdfs.map(l => `<a class="btn" target="_blank" rel="noopener" href="${esc(l.url)}">📄 PDF gratuito (${esc(l.site)}) ↗</a>`).join("")}${outros.map(l => `<a class="btn sec" target="_blank" rel="noopener" href="${esc(l.url)}">🌐 Ler em ${esc(l.site)} ↗</a>`).join("")}</div>`
+      : `<p>Não encontrei versão gratuita registrada. Se você tem o PDF (por exemplo, baixado da editora, do Google Scholar ou enviado pelo autor), envie aqui.</p>
+        <div class="row">${art.doi ? `<a class="btn sec" target="_blank" rel="noopener" href="https://doi.org/${esc(art.doi)}">Página da editora ↗</a>` : ""}<a class="btn sec" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=${encodeURIComponent(art.titulo)}">Procurar PDF no Google Scholar ↗</a></div>`}
+      <label class="btn" style="cursor:pointer;margin-top:12px">📂 Enviar o PDF do artigo<input type="file" id="pdfIn" accept="application/pdf,.pdf" hidden></label>
+      <div id="pdfMsg"></div>
+      <p class="muted" style="font-size:.82rem">A leitura acontece no seu aparelho; o PDF não é enviado a nenhum servidor. Tradução para estudo pessoal — para republicar a tradução, confira se a licença permite (ex.: CC BY).</p></div>`;
+    $("#pdfIn", el).addEventListener("change", async e => {
+      const f = e.target.files[0]; if (!f) return; const msg = $("#pdfMsg", el);
+      try {
+        const secoes = await lerPdf(f, t => { msg.innerHTML = `<div class="info">${esc(t)}</div>`; });
+        cacheSet(art.pmid, "full", secoes); cacheSet(art.pmid, "fullOrigem", "PDF enviado"); cacheSet(art.pmid, "trFull", {});
+        mostrarSecoes(el, art, oa, secoes, "PDF enviado");
+      } catch (err) { msg.innerHTML = `<div class="alerta">${esc(err.message)}</div>`; }
+    });
+  }
+  async function mostrarSecoes(el, art, oa, secoes, origem) {
     const trs = cacheGet(art.pmid, "trFull") || {};
     const total = secoes.reduce((s, x) => s + x.texto.length, 0);
-    el.innerHTML = `${iaAviso()}<div class="sucesso">Artigo em acesso aberto${oa.licenca ? ` (licença ${esc(oa.licenca.toUpperCase())})` : ""}. ${secoes.length} seções · ~${Math.round(total / 1000)} mil caracteres. Cite sempre a fonte original ao reutilizar.</div>
-      <div class="row no-print">${window.IA.temIA() ? `<button class="btn" id="trTudo">Traduzir todas as seções</button>` : ""}<label class="check"><input type="checkbox" id="mostraOrig" checked> Mostrar original ao lado</label>
-        <button class="btn sec peq" id="baixaTr">Baixar tradução (.md)</button></div><div id="trProg"></div>
-      <div id="secs">${secoes.map((s, i) => `<details ${i < 2 ? "open" : ""} data-i="${i}"><summary>${esc(s.titulo)}</summary><div class="grid-2 sec-grid">
+    const motor = await motorTraducao();
+    el.innerHTML = `<div class="sucesso">Texto completo carregado (${esc(origem)}${oa.licenca ? ` · licença ${esc(oa.licenca.toUpperCase())}` : ""}): ${secoes.length} seções · ~${Math.round(total / 1000)} mil caracteres.${motor ? ` Tradução por: ${NOME_MOTOR[motor]}.` : ""}</div>
+      ${motor ? "" : avisoSemTradutor}
+      <div class="row no-print">${motor ? `<button class="btn" id="trTudo">Traduzir o artigo inteiro</button>` : ""}<label class="check"><input type="checkbox" id="mostraOrig" checked> Mostrar original ao lado</label>
+        <button class="btn sec peq" id="baixaTr">Baixar tradução (.md)</button>${origem === "PDF enviado" ? `<button class="btn sec peq" id="trocaPdf">Trocar PDF</button>` : ""}</div><div id="trProg"></div>
+      <div id="secs">${secoes.map((s, i) => `<details ${i < 2 ? "open" : ""} data-i="${i}"><summary>${esc(s.titulo)}${trs[i] ? " ✓" : ""}</summary><div class="grid-2 sec-grid">
         <div class="orig">${s.texto.split("\n\n").map(p => `<p>${esc(p)}</p>`).join("")}</div>
-        <div class="trad">${trs[i] ? trs[i].split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("") : `<p class="muted">Não traduzida.</p>`}${window.IA.temIA() ? `<button class="btn peq sec no-print" data-tr="${i}">${trs[i] ? "Retraduzir" : "Traduzir esta seção"}</button>` : ""}</div></div></details>`).join("")}</div>`;
+        <div class="trad">${trs[i] ? trs[i].split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("") : `<p class="muted">Não traduzida.</p>`}
+          <div class="row no-print">${motor ? `<button class="btn peq sec" data-tr="${i}">${trs[i] ? "Retraduzir" : "Traduzir esta seção"}</button>` : ""}${motor ? "" : linksGoogle(s.texto)}</div></div></div></details>`).join("")}</div>`;
     const traduzir = async i => {
-      const alvo = $(`details[data-i="${i}"] .trad`, el); alvo.innerHTML = ""; let acc = "";
-      const t = await window.IA.chamar({ maxTokens: 32000, prompt: `Traduza integralmente para o português do Brasil a seção "${secoes[i].titulo}" de um artigo científico de acesso aberto. Preserve todos os números, estatísticas, referências entre colchetes e termos técnicos de fisioterapia. Não resuma, não omita frases e não acrescente comentários. Responda apenas com a tradução, mantendo a divisão em parágrafos com linha em branco.\n\n<artigo>\n${secoes[i].texto}\n</artigo>`, onText: s => { acc += s; alvo.textContent = acc; } });
+      const alvo = $(`details[data-i="${i}"] .trad`, el); alvo.innerHTML = `<p class="muted">Traduzindo…</p>`;
+      const t = await traduzirTexto(secoes[i].texto, { titulo: secoes[i].titulo, onText: s => { alvo.textContent = s; }, onProgresso: s => { $("#trProg", el).innerHTML = `<div class="info">${esc(s)}</div>`; } });
       trs[i] = t; if (!cacheSet(art.pmid, "trFull", trs)) $("#trProg", el).innerHTML = `<div class="aviso">Armazenamento do navegador cheio: a tradução não ficará salva. Baixe o .md.</div>`;
-      alvo.innerHTML = t.split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("");
+      alvo.innerHTML = t.split(/\n\n+/).map(p => `<p>${esc(p)}</p>`).join("") + `<div class="row no-print"><button class="btn peq sec" data-tr="${i}">Retraduzir</button></div>`;
     };
     el.addEventListener("click", async e => {
       const b = e.target.closest("[data-tr]"); if (!b) return;
-      b.disabled = true; try { await traduzir(+b.dataset.tr); } catch (err) { b.insertAdjacentHTML("afterend", `<div class="alerta">${esc(err.message)}</div>`); }
+      b.disabled = true; try { await traduzir(+b.dataset.tr); } catch (err) { b.insertAdjacentHTML("afterend", `<div class="alerta">${esc(err.message === "SEM_TRADUTOR" ? "Nenhum tradutor disponível neste navegador." : err.message)}</div>`); }
     });
     $("#trTudo", el)?.addEventListener("click", async () => {
       const bt = $("#trTudo", el); bt.disabled = true;
@@ -433,7 +554,8 @@
       $("#trProg", el).innerHTML = `<div class="sucesso">Tradução concluída.</div>`; bt.disabled = false;
     });
     $("#mostraOrig", el).addEventListener("change", e => $$(".orig", el).forEach(o => { o.style.display = e.target.checked ? "" : "none"; }));
-    $("#baixaTr", el).addEventListener("click", () => baixar(`traducao-${art.pmid}.md`, `# ${art.titulo}\n\n${art.revista} (${art.ano}). PMID ${art.pmid}. Licença: ${oa.licenca || "ver original"}. Tradução não oficial gerada por IA para estudo.\n\n` + secoes.map((s, i) => `## ${s.titulo}\n\n${trs[i] || "(não traduzida)"}`).join("\n\n"), "text/markdown"));
+    $("#trocaPdf", el)?.addEventListener("click", () => telaPdf(el, art, oa));
+    $("#baixaTr", el).addEventListener("click", () => baixar(`traducao-${art.pmid}.md`, `# ${art.titulo}\n\n${art.revista} (${art.ano}). PMID ${art.pmid}. Origem do texto: ${origem}. Tradução não oficial, para estudo.\n\n` + secoes.map((s, i) => `## ${s.titulo}\n\n${trs[i] || "(não traduzida)"}`).join("\n\n"), "text/markdown"));
   }
 
   function tabAvaliar(el, art) {
