@@ -16,8 +16,9 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável 
 | Módulo | O que faz |
 |---|---|
 | 📣 **Marketing** | Assistente de Instagram com IA que conhece o seu negócio (plano da semana, Reels, legendas, respostas, parcerias, avaliações no Google), planejador de anúncios no Meta com regras da Meta e do COFFITO e controle de custo por cliente, métricas semanais com funil, datas comemorativas da saúde, respostas prontas para WhatsApp/Direct e perfil do negócio com sugestões de bio. |
+| 🎥 **Aulas de Pilates** | Biblioteca de vídeos por exercício com os vídeos do próprio studio (gravar pela câmera do celular, enviar arquivo ou colar link; YouTube toca dentro do sistema), exercícios próprios, campo de referência de estudo, montador de aulas em sequência (carga, repetições, tempo, instruções) com aulas-modelo, modo aula com cronômetro e envio por WhatsApp/PDF. |
 | 👥 **Pacientes** | Cadastro (com registro de consentimento LGPD), sessões no formato SOAP, gráficos de dor e desfechos com interpretação pelo MCID, vínculo com avaliações e programas, relatório de alta em PDF com a marca. |
-| 🏋️ **Exercícios e Pilates** | Biblioteca de 88 exercícios (cada um com botão de vídeo: seu próprio link ou busca no YouTube; o vídeo vai junto no PDF/WhatsApp) (mobilidade, força, core, equilíbrio, retorno ao esporte, Pilates solo, Reformer, Cadillac, Chair e Barrel) com dose, execução, cuidados e progressão; montagem de programas por condição e fase do reparo; PDF com a marca e envio por WhatsApp. |
+| 🏋️ **Exercícios e Pilates** | Biblioteca de 103 exercícios (22 de Reformer) (cada um com botão de vídeo: seu próprio link ou busca no YouTube; o vídeo vai junto no PDF/WhatsApp) (mobilidade, força, core, equilíbrio, retorno ao esporte, Pilates solo, Reformer, Cadillac, Chair e Barrel) com dose, execução, cuidados e progressão; montagem de programas por condição e fase do reparo; PDF com a marca e envio por WhatsApp. |
 | 📋 **Avaliação completa** | Ficha guiada em 6 etapas (identificação, triagem de red/yellow flags, história da dor, exame físico com testes especiais, desfechos/STarT Back, síntese). A síntese gera automaticamente: hipóteses ranqueadas, fase do reparo tecidual, SINSS, tipo de dor, prognóstico com modificadores do paciente, conduta por fase, diagnóstico pela CIF e plano de reavaliação (MCID). Imprimir/exportar/importar JSON. |
 | 🧠 **Raciocínio clínico** | Gerador de hipóteses por região a partir dos achados, mostrando o que favorece, o que contradiz, o que falta perguntar, testes sugeridos (Sn/Sp) e diferenciais. Modelo hipotético-dedutivo, categorias de hipóteses, tipos de dor, SINSS, irritabilidade e vieses cognitivos. |
 | 🩹 **Reparo tecidual** | Fases inflamatória, proliferativa e de remodelação (biologia, sinais, objetivos, conduta), tempos de reparo de 8 tecidos e estimador de fase. |
@@ -63,6 +64,7 @@ js/novidades.js        # alertas de artigos novos no PubMed
 js/conteudo.js         # calendário, ideias e kit do artigo
 js/backup.js           # backup/restauração com criptografia
 js/marketing.js        # assistente de marketing, anúncios, métricas, datas, respostas, perfil
+js/aulas.js            # biblioteca de vídeos de Pilates, montador de aulas e modo aula
 ```
 
 Para adicionar uma condição, inclua um objeto em `CONDICOES` usando chaves existentes de `ACHADOS` e `TESTES`.

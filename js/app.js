@@ -107,6 +107,7 @@
           ["#/marketing", "📣", "Assistente de marketing", "Seu assistente para o Instagram: plano da semana, Reels, legendas, anúncios no Meta, respostas para o WhatsApp e análise de resultados."],
           ["#/marketing/anuncios", "📢", "Anúncios", "Monte campanhas para atrair alunos e pacientes, com textos aprovados pelas regras da Meta e controle do custo por cliente."],
           ["#/marketing/metricas", "📊", "Métricas", "Registre a semana em 2 minutos e veja seguidores, conversas, agendamentos e novos clientes."],
+          ["#/aulas", "🎥", "Aulas de Pilates", "Biblioteca com seus vídeos por exercício (grave pelo celular), montador de aulas em sequência e modo aula com cronômetro."],
           ["#/pacientes", "👥", "Pacientes", "Cadastro, sessões (SOAP), gráficos de evolução com MCID e relatório de alta em PDF."],
           ["#/exercicios", "🏋️", `Exercícios e Pilates (${(window.EXERCICIOS || []).length})`, "Biblioteca com Pilates solo e aparelhos; programas por condição e fase, em PDF ou WhatsApp."],
           ["#/avaliacao", "📋", "Avaliação completa", "Ficha guiada em 6 etapas com síntese automática, CIF e relatório para impressão."],
