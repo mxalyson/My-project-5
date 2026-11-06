@@ -20,11 +20,28 @@
   }
 
   // ---------------------------------------------------------------- biblioteca
+  // ---------------------------------------------------------------- vídeos dos exercícios
+  // Seu próprio vídeo (YouTube não listado, Instagram, Drive…) tem prioridade; sem ele, busca pronta no YouTube.
+  const videos = () => store.get("ex_videos", {});
+  const videoProprio = id => videos()[id] || "";
+  const buscaYoutube = e => `https://www.youtube.com/results?search_query=${encodeURIComponent((e.cat.startsWith("Pilates") ? "pilates " + e.cat.replace("Pilates — ", "").toLowerCase() + " " : "") + e.nome.replace(/\s*\(.*?\)/g, "") + " como fazer")}`;
+  const linkVideo = e => videoProprio(e.id) || buscaYoutube(e);
   function cartaoEx(e, extra = "") {
-    return `<details class="ex-card"><summary><b>${esc(e.nome)}</b> <span class="tag">${esc(e.cat)}</span>${e.fases.split("").map(f => `<span class="tag ${f === "I" ? "bad" : f === "P" ? "warn" : "ok"}" title="${FASE_NOME[f]}">${f}</span>`).join("")} ${extra}</summary>
+    const meu = videoProprio(e.id);
+    return `<details class="ex-card"><summary><b>${esc(e.nome)}</b> <span class="tag">${esc(e.cat)}</span>${e.fases.split("").map(f => `<span class="tag ${f === "I" ? "bad" : f === "P" ? "warn" : "ok"}" title="${FASE_NOME[f]}">${f}</span>`).join("")}${meu ? ` <span class="tag ok">🎥 seu vídeo</span>` : ""} ${extra}</summary>
       <p><b>Dose sugerida:</b> ${esc(e.dose)}</p><p><b>Como fazer:</b> ${esc(e.como)}</p><p><b>Cuidados:</b> ${esc(e.cuidados)}</p><p><b>Progressão:</b> ${esc(e.progressao)}</p>
+      <div class="row ex-video"><a class="btn peq ${meu ? "" : "sec"}" target="_blank" rel="noopener" href="${esc(linkVideo(e))}">▶ ${meu ? "Seu vídeo" : "Ver vídeos no YouTube"}</a>
+        <input type="url" data-video="${e.id}" placeholder="Cole aqui o link do SEU vídeo deste exercício" value="${esc(meu)}" style="flex:1;min-width:220px"></div>
       <p class="muted">Regiões: ${e.regioes.map(r => r === "global" ? "global" : regiaoNome(r)).join(", ")}</p></details>`;
   }
+  // salva o link do vídeo próprio (delegado no documento: funciona em qualquer lista de exercícios)
+  document.addEventListener("change", ev => {
+    const id = ev.target.dataset && ev.target.dataset.video; if (!id) return;
+    const v = videos(); const url = ev.target.value.trim();
+    if (url && !/^https?:\/\//i.test(url)) { ev.target.setCustomValidity("Use um link começando com https://"); ev.target.reportValidity(); return; }
+    ev.target.setCustomValidity(""); if (url) v[id] = url; else delete v[id]; store.set("ex_videos", v);
+    const a = ev.target.parentElement.querySelector("a"); if (a) { const e = ex(id); a.href = linkVideo(e); a.textContent = url ? "▶ Seu vídeo" : "▶ Ver vídeos no YouTube"; a.classList.toggle("sec", !url); }
+  });
   function viewBiblioteca(el) {
     el.innerHTML = `<div class="row"><input type="search" id="exQ" placeholder="Buscar (ex.: ponte, Reformer, ombro)" style="max-width:320px">
       <select id="exCat" style="max-width:220px"><option value="">Todas as categorias</option>${EX_CATEGORIAS.map(c => `<option>${esc(c)}</option>`).join("")}</select>
@@ -36,7 +53,9 @@
       const l = EXERCICIOS.filter(e => (!q || norm(e.nome + " " + e.cat + " " + e.como).includes(q)) && (!c || e.cat === c) && (!r || e.regioes.includes(r) || e.regioes.includes("global")) && (!fa || e.fases.includes(fa)));
       $("#exLista").innerHTML = l.map(e => cartaoEx(e)).join("") || `<p class="muted">Nenhum exercício encontrado.</p>`;
     };
-    el.addEventListener("input", f); el.addEventListener("change", f); f();
+    // só os filtros redesenham a lista (o campo de vídeo não pode ser apagado enquanto se digita)
+    const ehFiltro = e => ["exQ", "exCat", "exReg", "exFase"].includes(e.target.id);
+    el.addEventListener("input", e => { if (ehFiltro(e)) f(); }); el.addEventListener("change", e => { if (ehFiltro(e)) f(); }); f();
   }
 
   // ---------------------------------------------------------------- montar programa
@@ -104,7 +123,7 @@
   function textoPrograma(pg) {
     const m = window.MARCA.get(); const nome = pg.pacienteNome || "";
     return `*${pg.titulo}*${nome ? `\nPaciente: ${nome}` : ""}\nFrequência: ${pg.frequencia}\n\n` +
-      pg.itens.map((it, k) => { const e = ex(it.id); return `*${k + 1}. ${e.nome}*\n${it.dose}\n${e.como}${it.obs ? `\nObs.: ${it.obs}` : ""}`; }).join("\n\n") +
+      pg.itens.map((it, k) => { const e = ex(it.id); const v = videoProprio(e.id); return `*${k + 1}. ${e.nome}*\n${it.dose}\n${e.como}${it.obs ? `\nObs.: ${it.obs}` : ""}${v ? `\n▶ Vídeo: ${v}` : ""}`; }).join("\n\n") +
       `\n\n${pg.orientacoes}\n\n${m.nome} — ${m.sub}`;
   }
   function enviarWhatsApp(pg) {
@@ -117,7 +136,7 @@
     if (!pg.itens.length) return alert("Adicione exercícios ao programa.");
     const c = CONDICOES.find(x => x.id === pg.condicao);
     window.MARCA.imprimir(pg.titulo, `<p><b>Paciente:</b> ${esc(pg.pacienteNome || "—")} · <b>Data:</b> ${new Date().toLocaleDateString("pt-BR")}${c ? ` · <b>Foco:</b> ${esc(c.nome.replace(/ — ENCAMINHAR$/, ""))}` : ""}<br><b>Frequência:</b> ${esc(pg.frequencia)}</p>
-      ${pg.itens.map((it, k) => { const e = ex(it.id); return `<div class="pa-ex"><b>${k + 1}. ${esc(e.nome)}</b> — <i>${esc(it.dose)}</i><br>${esc(e.como)}${it.obs ? `<br><b>Obs.:</b> ${esc(it.obs)}` : ""}</div>`; }).join("")}
+      ${pg.itens.map((it, k) => { const e = ex(it.id); const v = videoProprio(e.id); return `<div class="pa-ex"><b>${k + 1}. ${esc(e.nome)}</b> — <i>${esc(it.dose)}</i><br>${esc(e.como)}${it.obs ? `<br><b>Obs.:</b> ${esc(it.obs)}` : ""}${v ? `<br>▶ Vídeo: ${esc(v)}` : ""}</div>`; }).join("")}
       <p style="margin-top:14px"><b>Orientações:</b> ${esc(pg.orientacoes)}</p>`);
   }
 
@@ -135,5 +154,5 @@
   }
 
   rotas.exercicios = (sub, id) => { if (sub === "montar" && id) store.set("programa_rascunho", programas().find(p => p.id === id) || null); viewExercicios(sub, id); };
-  window.PRESCRICAO = { programas, imprimirPrograma, enviarWhatsApp, textoPrograma, ex };
+  window.PRESCRICAO = { programas, imprimirPrograma, enviarWhatsApp, textoPrograma, ex, videoProprio };
 })();

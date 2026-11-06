@@ -30,11 +30,12 @@
   }
 
   // Chamada genérica. schema → resposta JSON validada pelo structured outputs.
-  async function chamar({ prompt, schema, maxTokens = 16000, effort, onText, system = SISTEMA }) {
+  // `mensagens` (conversa com várias trocas) substitui `prompt` quando informado
+  async function chamar({ prompt, mensagens, schema, maxTokens = 16000, effort, onText, system = SISTEMA }) {
     const { client, Anthropic, c } = await cliente();
     const output_config = { effort: effort || c.effort };
     if (schema) output_config.format = { type: "json_schema", schema };
-    const params = { model: c.modelo, max_tokens: maxTokens, system, messages: [{ role: "user", content: prompt }], output_config };
+    const params = { model: c.modelo, max_tokens: maxTokens, system, messages: mensagens || [{ role: "user", content: prompt }], output_config };
     // Fallback no servidor quando o classificador de segurança recusa (Opus/Sonnet 5.5 na API da Claude).
     const comFallback = c.modelo !== "claude-haiku-5-5";
     let msg;

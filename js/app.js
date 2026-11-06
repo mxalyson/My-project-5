@@ -93,7 +93,7 @@
         <div style="flex:1;min-width:220px"><h1 style="margin:0">${esc(m.nome)}</h1><div style="letter-spacing:.3em;font-size:.72rem;color:#f1ead9;text-transform:uppercase">${esc(m.sub)}</div></div></div>
         <div class="ornamento"></div>
         <p class="lema">${esc(m.lema || "Cuidado, movimento e qualidade de vida")}</p>
-        <p style="color:#d9cfb4;max-width:720px">Estudo e apoio ao raciocínio clínico — da avaliação à conduta, com diretrizes e artigos de alta qualidade, e criação de conteúdo para as redes.</p>
+        <p style="color:#d9cfb4;max-width:720px">Marketing do studio e da clínica, atendimento e raciocínio clínico com ciência de qualidade — tudo em um só lugar.</p>
         <div class="pilares">${esc((m.rodape || "").toUpperCase())}</div></div>`; })()}
       <div class="card">
         <h3>Fluxo do raciocínio clínico</h3>
@@ -104,6 +104,9 @@
       </div>
       <div class="grid">
         ${[
+          ["#/marketing", "📣", "Assistente de marketing", "Seu assistente para o Instagram: plano da semana, Reels, legendas, anúncios no Meta, respostas para o WhatsApp e análise de resultados."],
+          ["#/marketing/anuncios", "📢", "Anúncios", "Monte campanhas para atrair alunos e pacientes, com textos aprovados pelas regras da Meta e controle do custo por cliente."],
+          ["#/marketing/metricas", "📊", "Métricas", "Registre a semana em 2 minutos e veja seguidores, conversas, agendamentos e novos clientes."],
           ["#/pacientes", "👥", "Pacientes", "Cadastro, sessões (SOAP), gráficos de evolução com MCID e relatório de alta em PDF."],
           ["#/exercicios", "🏋️", `Exercícios e Pilates (${(window.EXERCICIOS || []).length})`, "Biblioteca com Pilates solo e aparelhos; programas por condição e fase, em PDF ou WhatsApp."],
           ["#/avaliacao", "📋", "Avaliação completa", "Ficha guiada em 6 etapas com síntese automática, CIF e relatório para impressão."],

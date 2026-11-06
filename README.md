@@ -15,8 +15,9 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável 
 
 | Módulo | O que faz |
 |---|---|
+| 📣 **Marketing** | Assistente de Instagram com IA que conhece o seu negócio (plano da semana, Reels, legendas, respostas, parcerias, avaliações no Google), planejador de anúncios no Meta com regras da Meta e do COFFITO e controle de custo por cliente, métricas semanais com funil, datas comemorativas da saúde, respostas prontas para WhatsApp/Direct e perfil do negócio com sugestões de bio. |
 | 👥 **Pacientes** | Cadastro (com registro de consentimento LGPD), sessões no formato SOAP, gráficos de dor e desfechos com interpretação pelo MCID, vínculo com avaliações e programas, relatório de alta em PDF com a marca. |
-| 🏋️ **Exercícios e Pilates** | Biblioteca de 88 exercícios (mobilidade, força, core, equilíbrio, retorno ao esporte, Pilates solo, Reformer, Cadillac, Chair e Barrel) com dose, execução, cuidados e progressão; montagem de programas por condição e fase do reparo; PDF com a marca e envio por WhatsApp. |
+| 🏋️ **Exercícios e Pilates** | Biblioteca de 88 exercícios (cada um com botão de vídeo: seu próprio link ou busca no YouTube; o vídeo vai junto no PDF/WhatsApp) (mobilidade, força, core, equilíbrio, retorno ao esporte, Pilates solo, Reformer, Cadillac, Chair e Barrel) com dose, execução, cuidados e progressão; montagem de programas por condição e fase do reparo; PDF com a marca e envio por WhatsApp. |
 | 📋 **Avaliação completa** | Ficha guiada em 6 etapas (identificação, triagem de red/yellow flags, história da dor, exame físico com testes especiais, desfechos/STarT Back, síntese). A síntese gera automaticamente: hipóteses ranqueadas, fase do reparo tecidual, SINSS, tipo de dor, prognóstico com modificadores do paciente, conduta por fase, diagnóstico pela CIF e plano de reavaliação (MCID). Imprimir/exportar/importar JSON. |
 | 🧠 **Raciocínio clínico** | Gerador de hipóteses por região a partir dos achados, mostrando o que favorece, o que contradiz, o que falta perguntar, testes sugeridos (Sn/Sp) e diferenciais. Modelo hipotético-dedutivo, categorias de hipóteses, tipos de dor, SINSS, irritabilidade e vieses cognitivos. |
 | 🩹 **Reparo tecidual** | Fases inflamatória, proliferativa e de remodelação (biologia, sinais, objetivos, conduta), tempos de reparo de 8 tecidos e estimador de fase. |
@@ -25,7 +26,7 @@ Aplicação web estática (HTML/CSS/JS puro, sem dependências) e **instalável 
 | 🧮 **Escalas e prescrição** | Red/yellow flags, STarT Back interativo, PROMs com MCID, Oxford, end-feel, parâmetros de treino resistido, 1RM, regra de monitoramento da dor, critérios e LSI para retorno ao esporte. |
 | 🦵 **Anatomia aplicada** | 79 músculos (origem, inserção, inervação, ação/relevância clínica), ossos, nervos periféricos, dermátomos/miótomos/reflexos, artrocinemática e padrões capsulares. |
 | 🔬 **Evidências** | O que fazer / não fazer / incerto, guidelines por condição, 11 recomendações (Lin et al. 2020), níveis de evidência e GRADE, leitura crítica, calculadora PEDro, interpretação de IC × MCID e NNT, busca PICO no PubMed com filtros, glossário PT↔EN e fontes confiáveis. |
-| 📰 **Artigos (PubMed)** | Busca no PubMed (E-utilities) com filtros de desenho/data e conversão de pergunta clínica em busca; página do artigo com resumo, tradução, **texto completo** (artigos de acesso aberto via Europe PMC), **avaliação de qualidade** (triagem automática PEDro/AMSTAR-2 + avaliação crítica por IA com risco de viés e GRADE), **extração** (PICO, dose FITT, resultados com IC e relevância clínica, o que importa/não importa, glossário), notas e biblioteca exportável (.json/.md). |
+| 📰 **Artigos (PubMed)** | Busca no PubMed (E-utilities) com filtros de desenho/data e conversão de pergunta clínica em busca; página do artigo com resumo, tradução, **texto completo** (acesso aberto e gratuito via Europe PMC/PMC, ou PDF enviado pelo usuário e lido no aparelho), tradução por IA, pelo tradutor embutido do Chrome (gratuito) ou Google Tradutor, **avaliação de qualidade** (triagem automática PEDro/AMSTAR-2 + avaliação crítica por IA com risco de viés e GRADE), **extração** (PICO, dose FITT, resultados com IC e relevância clínica, o que importa/não importa, glossário), notas e biblioteca exportável (.json/.md). |
 | 🔔 **Novidades científicas** | Temas acompanhados no PubMed (Pilates, dor lombar, LCA etc. ou personalizados), contagem de artigos novos desde a última visita, aviso no menu e resumo semanal com IA. |
 | 🗓 **Planejamento de conteúdo** | Calendário editorial com status, banco de ideias (dúvidas de pacientes) e **kit do artigo**: carrossel + Reels + sequência de stories gerados e agendados de uma vez. |
 | 📸 **Posts para Instagram** | Carrosséis (feed 4:5, quadrado, story) gerados a partir de artigos, condições do sistema ou texto livre; 5 temas, edição de cada slide, exportação em PNG, legenda com contador de caracteres/hashtags. |
@@ -61,6 +62,7 @@ js/prescricao.js       # programas de exercícios (PDF/WhatsApp)
 js/novidades.js        # alertas de artigos novos no PubMed
 js/conteudo.js         # calendário, ideias e kit do artigo
 js/backup.js           # backup/restauração com criptografia
+js/marketing.js        # assistente de marketing, anúncios, métricas, datas, respostas, perfil
 ```
 
 Para adicionar uma condição, inclua um objeto em `CONDICOES` usando chaves existentes de `ACHADOS` e `TESTES`.
@@ -71,7 +73,7 @@ As 75 evidências das condições foram conferidas no PubMed (autor, revista, an
 
 ## Direitos autorais
 
-A tradução de **texto completo** é feita apenas para artigos em **acesso aberto** (licenças Creative Commons, via Europe PMC); para os demais, só o resumo. Os posts devem resumir com palavras próprias e citar a fonte — não reproduza figuras ou tabelas protegidas.
+O texto completo é carregado automaticamente quando o artigo está disponível no PMC/Europe PMC; nos demais casos, o usuário envia o PDF gratuito que baixou e a leitura acontece no próprio aparelho. A tradução é para estudo pessoal; para republicá-la, confira se a licença permite (ex.: CC BY). Os posts devem resumir com palavras próprias e citar a fonte — não reproduza figuras ou tabelas protegidas.
 
 ## Aviso
 
