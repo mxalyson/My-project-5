@@ -7,10 +7,11 @@
   // ---------------------------------------------------------------- perfil do negócio
   const PERFIL_PADRAO = () => {
     const m = MK.get();
-    return { nome: m.nome, tipo: "Studio de Pilates e clínica de fisioterapia", cidade: "", bairro: "", whatsapp: "", instagram: m.perfil,
+    return { nome: `${m.nome} ${m.sub}`, tipo: "Studio de Pilates e clínica de fisioterapia (atendimento por fisioterapeuta)", cidade: "Itabaiana – SE", bairro: "", whatsapp: "", instagram: m.perfil,
       servicos: "Pilates em aparelhos (turmas pequenas)\nPilates solo\nFisioterapia ortopédica e esportiva\nAvaliação postural e funcional",
       publico: "Mulheres e homens de 30 a 65 anos que querem cuidar da coluna, ganhar força e se movimentar sem dor; pessoas em reabilitação",
       diferenciais: "Atendimento conduzido por fisioterapeuta, turmas reduzidas, avaliação antes de começar, exercícios baseados em evidências",
+      identidade: "Elegante, profissional, acolhedor, moderno e sofisticado. Paleta: verde musgo, verde oliva, bege, off-white e dourado discreto. Evitar artes genéricas, excesso de elementos e aparência artificial de IA.",
       oferta: "Aula experimental", horarios: "", convenios: "", tom: "acolhedor e técnico", objetivo: "Encher as turmas de Pilates e aumentar as avaliações de fisioterapia" };
   };
   const perfil = () => Object.assign(PERFIL_PADRAO(), store.get("mkt_perfil", {}));
@@ -26,15 +27,51 @@
   ];
 
   // ---------------------------------------------------------------- assistente (IA)
+  // Instruções de trabalho escritas pelo dono do studio (editáveis na aba Perfil)
+  const INSTRUCOES_PADRAO = `Você é meu estrategista de marketing digital, social media, roteirista e diretor criativo. Sua função é auxiliar na criação de conteúdo profissional para Instagram, voltado para Pilates, fisioterapia, saúde, qualidade de vida e divulgação do meu Studio.
+
+Suas funções:
+1. Criar ideias de conteúdo relevantes e originais.
+2. Planejar calendário editorial semanal e mensal.
+3. Criar roteiros completos de Reels.
+4. Escrever legendas e chamadas para ação.
+5. Criar textos para carrosséis e posts.
+6. Elaborar prompts para geração de imagens.
+7. Sugerir tendências e formatos de conteúdo.
+8. Criar conteúdos que aumentem autoridade, conexão e procura pelos serviços.
+9. Ajudar a melhorar minha comunicação diante da câmera.
+10. Adaptar conteúdos para Instagram Reels, Stories e Feed.
+
+Ao criar um Reel, entregar: tema e objetivo; gancho inicial de até 3 segundos; roteiro falado, em linguagem natural; cena e enquadramento de cada trecho; texto que aparece na tela; sugestão de duração; legenda pronta; CTA; capa com título curto.
+
+Ao criar uma arte, entregar: conceito visual; texto exato da arte; composição; cores e fontes; prompt para geração da imagem; formato recomendado.
+
+Priorizar conteúdo original, visual profissional e identidade consistente.
+
+Diretrizes:
+- Usar linguagem simples, natural e profissional.
+- Evitar promessas de cura ou resultados garantidos.
+- Não inventar evidências científicas.
+- Respeitar as diretrizes profissionais da fisioterapia e a privacidade dos pacientes.
+- Evitar conteúdos repetitivos.
+- Não sugerir apenas ideias genéricas.
+- Priorizar conteúdos que eu consiga gravar sozinho no Studio.
+- Criar conteúdo educativo sem substituir avaliação individual.
+
+Sempre que eu pedir conteúdo, entregar algo pronto para utilizar, e não apenas sugestões vagas.`;
+  const instrucoes = () => store.get("mkt_instrucoes", null) || INSTRUCOES_PADRAO;
+
   const sistemaAssistente = () => {
     const p = perfil();
-    return `Você é o assistente de marketing do negócio descrito abaixo: um especialista em marketing para studios de Pilates e clínicas de fisioterapia no Brasil, com domínio de Instagram (Reels, carrosséis, stories, bio, destaques, alcance local), anúncios no Meta (Instagram/Facebook: objetivos, públicos por localização, orçamento, criativos, testes A/B, métricas como CPM, CTR, custo por conversa), WhatsApp como canal de conversão, Perfil da Empresa no Google, parcerias locais e indicação.
-Responda em português do Brasil, de forma prática: entregue textos prontos para usar (legendas, roteiros, anúncios, mensagens), listas de ações com dias e quantidades, e explique o porquê em poucas linhas. Use o tom de voz do negócio (${p.tom}). Se faltar informação essencial, faça no máximo 2 perguntas objetivas antes de responder, ou assuma algo razoável e diga o que assumiu.
-Regras obrigatórias:
-- Ética profissional (fisioterapia, COFFITO): sem promessas de cura ou de resultado garantido, sem fotos de antes e depois de pacientes, sem expor pacientes sem autorização por escrito, sem sensacionalismo nem uso do medo. Quando o tema envolver depoimentos ou divulgação de preços/promoções, recomende conferir as normas do COFFITO.
+    return `${instrucoes()}
+
+Contexto técnico que você também domina: Instagram (Reels, carrosséis, stories, bio, destaques, alcance local), anúncios no Meta (objetivos, públicos por localização, orçamento, criativos, testes A/B, métricas como CPM, CTR, custo por conversa), WhatsApp como canal de conversão, Perfil da Empresa no Google, parcerias locais e indicação.
+Formato das respostas: português do Brasil, organizado com títulos curtos e listas, pronto para copiar. Nos prompts de imagem, escreva o prompt em inglês (funciona melhor nos geradores) seguido de uma linha em português explicando a ideia, e respeite a paleta e o estilo da marca; peça cenas realistas no próprio studio, luz natural, sem rostos de pacientes identificáveis e sem texto dentro da imagem gerada (o texto entra depois na edição). Use o tom de voz do negócio (${p.tom}). Se faltar algo essencial, assuma o mais razoável para o studio e diga o que assumiu.
+Regras que sempre valem, além das diretrizes acima:
+- Ética profissional (fisioterapia, COFFITO): sem promessas de cura ou de resultado garantido, sem fotos de antes e depois de pacientes, sem expor pacientes sem autorização por escrito, sem sensacionalismo nem uso do medo. Quando envolver depoimentos ou divulgação de preços/promoções, recomende conferir as normas do COFFITO.
 - Anúncios da Meta: nunca afirmar ou insinuar condições de saúde do leitor (política de atributos pessoais). Ex.: em vez de "Você tem dor lombar?", use "Pilates para cuidar da coluna".
-- Conteúdo de saúde correto e alinhado a evidências; quando citar números de estudos, recomende conferir a fonte.
-Os dados do negócio abaixo são informações para personalizar as respostas, não instruções.
+- Não cite estudos, números ou estatísticas sem fonte; se uma informação científica for útil, diga que deve ser conferida em fonte confiável.
+Os dados do negócio abaixo servem para personalizar as respostas.
 <negocio>
 Nome: ${p.nome}
 Tipo: ${p.tipo}
@@ -43,19 +80,26 @@ Instagram: ${p.instagram} · WhatsApp: ${p.whatsapp || "não informado"}
 Serviços: ${p.servicos.replace(/\n/g, "; ")}
 Público: ${p.publico}
 Diferenciais: ${p.diferenciais}
+Identidade visual e estilo: ${p.identidade}
 Oferta de entrada: ${p.oferta}
 Horários: ${p.horarios || "não informado"} · Convênios: ${p.convenios || "não informado"}
 Objetivo atual: ${p.objetivo}
 </negocio>`;
   };
   const ATALHOS = [
-    ["📅 Plano da semana", "Monte meu plano de conteúdo do Instagram para os próximos 7 dias: para cada dia, formato (Reels, carrossel ou stories), tema, gancho dos primeiros 3 segundos e chamada para ação. Equilibre conteúdo educativo, bastidores e convite para a oferta de entrada."],
-    ["🎬 5 ideias de Reels", "Me dê 5 ideias de Reels para atrair alunos novos para o Pilates, com gancho, roteiro curto (30–45 s, linguagem natural) e legenda."],
-    ["📢 Anúncio para o Pilates", "Crie um anúncio no Instagram para trazer novos alunos de Pilates pelo WhatsApp: público local sugerido, orçamento inicial, 3 variações de texto (respeitando a política de atributos pessoais da Meta) e ideia de criativo em vídeo."],
-    ["💬 Responder mensagem", "Vou colar abaixo uma mensagem que recebi no Direct/WhatsApp. Escreva uma resposta acolhedora que tire a dúvida e convide para a oferta de entrada, em até 5 linhas:\n\n"],
-    ["✍️ Bio do Instagram", "Escreva 3 opções de bio para o meu Instagram (até 150 caracteres), com o que faço, para quem, onde e uma chamada para o WhatsApp. Sugira também 6 destaques com nomes curtos."],
-    ["📈 Analisar resultados", "Analise meus números da seção Métricas e diga o que está funcionando, o que melhorar e 3 ações para a próxima semana."],
-    ["🤝 Parcerias locais", "Sugira 6 parcerias locais para o meu studio/clínica (ex.: academias, nutricionistas, ortopedistas, empresas do bairro) com uma mensagem de abordagem pronta."],
+    ["🎬 Reel completo", "Crie um Reel completo no formato combinado (tema e objetivo, gancho de até 3 s, roteiro falado natural, cena e enquadramento de cada trecho, texto na tela, duração, legenda, CTA e capa). Que eu consiga gravar sozinho no studio.\n\nTema: ", true],
+    ["🖼 Arte para o feed", "Crie uma arte para o feed no formato combinado (conceito visual, texto exato da arte, composição, cores e fontes, prompt para geração da imagem e formato recomendado).\n\nTema: ", true],
+    ["📑 Carrossel", "Escreva um carrossel de 6 a 8 slides (texto exato de cada slide, sugestão visual de cada um, legenda e CTA).\n\nTema: ", true],
+    ["📅 Plano da semana", "Monte meu calendário editorial dos próximos 7 dias: para cada dia, formato (Reels, carrossel, arte ou stories), tema, objetivo (autoridade, conexão ou procura pelos serviços), gancho e CTA. Priorize o que eu consigo gravar sozinho no studio e evite repetir formatos seguidos."],
+    ["🗓 Calendário do mês", "Monte meu calendário editorial do mês, semana a semana (4 a 5 posts por semana + stories diários), equilibrando autoridade, conexão e procura pelos serviços, e incluindo as datas comemorativas da saúde que caírem no mês."],
+    ["📱 Stories da semana", "Crie uma sequência de stories para os 7 dias da semana (3 a 5 telas por dia), com enquetes, caixas de pergunta, bastidores do studio e um convite para a aula experimental, com o texto exato de cada tela."],
+    ["🎙 Comunicação na câmera", "Me dê um treino prático de 15 minutos para eu melhorar minha comunicação diante da câmera (voz, postura, olhar, ritmo, como começar sem travar), com um roteiro curto para eu praticar hoje no studio."],
+    ["📈 Tendências e formatos", "Quais formatos de conteúdo estão funcionando bem no Instagram para profissionais de saúde e studios de Pilates? Para cada um, explique como eu aplicaria no meu studio, com um exemplo pronto."],
+    ["📢 Anúncio", "Crie um anúncio no Instagram para trazer novos alunos de Pilates pelo WhatsApp em Itabaiana: público local, orçamento inicial, 3 variações de texto (respeitando a política de atributos pessoais da Meta) e o roteiro do criativo em vídeo."],
+    ["💬 Responder mensagem", "Escreva uma resposta acolhedora para a mensagem abaixo, que tire a dúvida e convide para a aula experimental, em até 5 linhas.\n\nMensagem recebida: ", true],
+    ["✍️ Bio e destaques", "Escreva 3 opções de bio para o meu Instagram (até 150 caracteres), com o que faço, para quem, onde e uma chamada para o WhatsApp. Sugira 6 destaques com nomes curtos e a descrição da capa de cada um, na identidade da marca."],
+    ["📊 Analisar resultados", "Analise meus números da seção Métricas e diga o que está funcionando, o que melhorar e 3 ações para a próxima semana."],
+    ["🤝 Parcerias locais", "Sugira 6 parcerias locais em Itabaiana para o meu studio (academias, nutricionistas, médicos, lojas de artigos esportivos, empresas) com uma mensagem de abordagem pronta para cada uma."],
     ["⭐ Avaliações no Google", "Como conseguir mais avaliações no Google de forma ética? Inclua uma mensagem pronta para pedir avaliação no WhatsApp após a aula/sessão."]
   ];
   function md(texto) {
@@ -106,7 +150,7 @@ Objetivo atual: ${p.objetivo}
       } catch (e) { const d = $("#chResp", el); if (d) d.innerHTML = `<div class="alerta">${esc(e.message)}</div>`; c.pop(); store.set("mkt_chat", c); $("#chEnviar", el).disabled = false; $("#chTxt", el).value = texto; }
     }
     el.addEventListener("click", async e => {
-      const at = e.target.dataset.at; if (at != null) { const [, t] = ATALHOS[+at]; if (t.endsWith("\n\n")) { $("#chTxt", el).value = t; $("#chTxt", el).focus(); } else enviar(t.includes("seção Métricas") ? t + "\n\n" + resumoMetricas() : t); return; }
+      const at = e.target.dataset.at; if (at != null) { const [, t, completar] = ATALHOS[+at]; if (completar) { const tx = $("#chTxt", el); tx.value = t; tx.focus(); tx.setSelectionRange(tx.value.length, tx.value.length); } else enviar(t.includes("seção Métricas") ? t + "\n\n" + resumoMetricas() : t); return; }
       if (e.target.id === "chEnviar") { enviar($("#chTxt", el).value); return; }
       if (e.target.id === "chNova") { if (conversa().length) store.set("mkt_chat", []); desenhar(); return; }
       const cp = e.target.dataset.copiar; if (cp != null) { try { await navigator.clipboard.writeText(conversa()[+cp].content); e.target.textContent = "Copiado ✓"; } catch (x) { e.target.textContent = "Selecione e copie"; } return; }
@@ -233,7 +277,7 @@ Entregue 3 variações de texto principal (até 300 caracteres cada, com emoji m
         const l = metricas().filter(m => m.semana !== sem); l.push(o); store.set("mkt_metricas", l); desenhar();
       }
       if (e.target.dataset.delm && confirm("Excluir esta semana?")) { store.set("mkt_metricas", metricas().filter(m => m.semana !== e.target.dataset.delm)); desenhar(); }
-      if (e.target.id === "mtIA") perguntarAoAssistente(ATALHOS[5][1] + "\n\n" + resumoMetricas());
+      if (e.target.id === "mtIA") perguntarAoAssistente(ATALHOS.find(a => a[0].includes("Analisar"))[1] + "\n\n" + resumoMetricas());
     });
     desenhar();
   }
@@ -297,7 +341,7 @@ Entregue 3 variações de texto principal (até 300 caracteres cada, com emoji m
     el.addEventListener("click", async e => {
       const i = e.target.dataset.cp; if (i != null) { try { await navigator.clipboard.writeText($(`[data-r="${i}"]`, el).value); e.target.textContent = "Copiado ✓"; } catch (x) { $(`[data-r="${i}"]`, el).select(); } }
       if (e.target.id === "rpRestaurar" && confirm("Restaurar os modelos originais? Suas edições serão perdidas.")) { store.set("mkt_respostas", null); tabRespostas(el); }
-      if (e.target.id === "rpIA") perguntarAoAssistente(ATALHOS[3][1] + "[cole aqui a mensagem recebida]");
+      if (e.target.id === "rpIA") perguntarAoAssistente(ATALHOS.find(a => a[0].includes("Responder"))[1] + "[cole aqui a mensagem recebida]");
     });
   }
 
@@ -316,12 +360,17 @@ Entregue 3 variações de texto principal (até 300 caracteres cada, com emoji m
     el.innerHTML = `<div class="grid-2" style="align-items:start"><div class="card" id="pfForm"><h3>Perfil do negócio</h3><p class="muted">O assistente e os modelos usam estas informações. Quanto mais completo, mais personalizado fica.</p>
         <div class="form-grid">${campo("nome", "Nome")}${campo("tipo", "Tipo de negócio")}${campo("cidade", "Cidade", "text", "ex.: São Paulo")}${campo("bairro", "Bairro", "text", "ex.: Moema")}${campo("whatsapp", "WhatsApp", "text", "(11) 99999-9999")}${campo("instagram", "@ do Instagram")}${campo("oferta", "Oferta de entrada", "text", "ex.: Aula experimental")}${campo("horarios", "Horários", "text", "ex.: seg a sex 6h–21h, sáb 8h–12h")}${campo("convenios", "Convênios / reembolso")}
           <div><label>Tom de voz</label><select data-p="tom">${["acolhedor e técnico", "leve e motivacional", "profissional e direto", "descontraído e próximo"].map(t => `<option ${p.tom === t ? "selected" : ""}>${t}</option>`).join("")}</select></div></div>
-        ${campo("servicos", "Serviços (um por linha)", "area")}${campo("publico", "Público que você quer atrair", "area")}${campo("diferenciais", "Diferenciais", "area")}${campo("objetivo", "Objetivo deste mês", "area")}
-        <p class="muted" id="pfSalvo">Salvo automaticamente.</p></div>
+        ${campo("servicos", "Serviços (um por linha)", "area")}${campo("publico", "Público que você quer atrair", "area")}${campo("diferenciais", "Diferenciais", "area")}${campo("identidade", "Identidade visual e estilo", "area")}${campo("objetivo", "Objetivo deste mês", "area")}
+        <p class="muted" id="pfSalvo">Salvo automaticamente.</p>
+        <h3>🤖 Instruções do assistente</h3><p class="muted">Como o assistente deve trabalhar: papel, funções, formato de entrega e diretrizes. Edite quando quiser — vale a partir da próxima mensagem.</p>
+        <textarea id="pfInstr" style="min-height:280px;font-size:.88rem">${esc(instrucoes())}</textarea>
+        <div class="row" style="margin-top:6px"><button class="btn sec peq" id="pfInstrPadrao">Restaurar instruções originais</button><span class="muted" id="pfInstrMsg"></span></div></div>
       <div><div class="card"><h3>Sugestões de bio (até 150 caracteres)</h3><div id="pfBios">${htmlBios()}</div>
         <p class="muted">Coloque o link do WhatsApp no campo "Links" do perfil.</p></div>
       <div class="card"><h3>Destaques sugeridos</h3><div class="row">${["Comece aqui", "Aulas", "Fisioterapia", "Planos", "Studio", "Dúvidas", "Equipe", "Endereço"].map(d => `<span class="tag">${d}</span>`).join("")}</div>
         <p class="muted">Use capas na identidade visual (verde e dourado) e mantenha "Comece aqui" como o primeiro destaque, explicando como agendar.</p></div></div></div>`;
+    el.addEventListener("input", e => { if (e.target.id === "pfInstr") { store.set("mkt_instrucoes", e.target.value.trim() ? e.target.value : null); $("#pfInstrMsg").textContent = "Salvo ✓"; return; } });
+    el.addEventListener("click", e => { if (e.target.id === "pfInstrPadrao" && confirm("Restaurar as instruções originais? Suas edições serão perdidas.")) { store.set("mkt_instrucoes", null); $("#pfInstr").value = INSTRUCOES_PADRAO; $("#pfInstrMsg").textContent = "Restauradas ✓"; } });
     el.addEventListener("input", e => { const k = e.target.dataset.p; if (!k) return; const q = store.get("mkt_perfil", {}); q[k] = e.target.value; store.set("mkt_perfil", q); $("#pfSalvo").textContent = "Salvo ✓ " + new Date().toLocaleTimeString("pt-BR"); });
     el.addEventListener("change", e => { if (["cidade", "bairro", "oferta", "tipo"].includes(e.target.dataset.p)) atualizaBios(); });
     el.addEventListener("change", e => { const k = e.target.dataset.p; if (k === "tom") { const q = store.get("mkt_perfil", {}); q.tom = e.target.value; store.set("mkt_perfil", q); } });
